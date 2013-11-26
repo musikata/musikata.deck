@@ -1,0 +1,17 @@
+{
+  "name": "musikata.deck",
+  "version": "0.0.0",
+  "authors": [
+    "adorsk <adorsk>"
+  ],
+  "description": "A library for creating slide decks",
+  "license": "Apache 2.0",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
