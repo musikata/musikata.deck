@@ -4,7 +4,7 @@ require.config({
     jquery: 'bower_components/jquery/jquery',
     backbone: 'bower_components/backbone/backbone',
     underscore: 'bower_components/underscore/underscore',
-    marionette: 'bower_components/marionette/bower_components/backbone.marionette',
+    marionette: 'bower_components/backbone.marionette/lib/backbone.marionette',
     handlebars: 'bower_components/handlebars/handlebars',
   },
 
@@ -13,6 +13,11 @@ require.config({
   ],
 
   shim: {
+    'underscore': {
+      deps: [],
+      exports: '_'
+    },
+
     'backbone': {
       deps: ['underscore', 'jquery'],
       exports: 'Backbone'

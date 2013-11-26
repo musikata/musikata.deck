@@ -20,7 +20,7 @@ module.exports = function(config) {
       { pattern: 'src/**/*.html', watched: true, included: false},
 
       // Test files.
-      { pattern: 'test/**/*spec.js', watched: true, included: false},
+      { pattern: 'test/specs/**/*spec.js', watched: true, included: false},
 
       // Libs.
       { pattern: 'bower_components/**/*.js', watched: false, included: false},
