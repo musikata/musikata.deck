@@ -10,20 +10,20 @@ function(_){
   };
 
   _.extend(ModelFactory.prototype, {
-    addHandler: function(options){
+    addHandler: function(type, handler, options){
 
       // Throw error for key collisions.
-      if (! _.isUndefined(this._handlers[options.type])){
+      if (! _.isUndefined(this._handlers[type])){
         throw new Error("Key collision: handler already set for type '" 
-                        + options.type + "', please unregister the "
+                        + type + "', please unregister the "
                         + "existing handler before setting a new one.");
       }
 
-      this._handlers[options.type] = options.handler;
+      this._handlers[type] = handler;
     },
 
-    removeHandler: function(options){
-      delete this._handlers[options.type];
+    removeHandler: function(type){
+      delete this._handlers[type];
     },
 
     getHandler: function(type){

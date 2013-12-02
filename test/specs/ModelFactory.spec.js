@@ -6,7 +6,7 @@ define(
 ],
 function(require, ModelFactory, Backbone){
 
-  ddescribe('ModelFactory', function(){
+  describe('ModelFactory', function(){
 
     var modelFactory;
     beforeEach(function(){
@@ -19,20 +19,20 @@ function(require, ModelFactory, Backbone){
     describe('handler registration', function(){
 
       it("should be able to register handlers for various model types", function(){
-        modelFactory.addHandler({type: 'foo', handler: function(){}});
+        modelFactory.addHandler('foo', {});
       });
 
       it("should throw an error if a handler is already registered for a given type", function(){
-        modelFactory.addHandler({type: 'foo', handler: function(){}});
+        modelFactory.addHandler('foo', {});
         expect(function(){
-          modelFactory.addHandler({type: 'foo', handler: function(){}});
+          modelFactory.addHandler('foo', {});
         }).toThrow();
       });
 
       it("should be able to unregister handlers for various model types", function(){
-        modelFactory.addHandler({type: 'foo', handler: function(){}});
-        modelFactory.removeHandler({type: 'foo'});
-        modelFactory.addHandler({type: 'foo', handler: function(){}});
+        modelFactory.addHandler('foo', {});
+        modelFactory.removeHandler('foo');
+        modelFactory.addHandler('foo', {});
       });
 
     });
@@ -40,7 +40,7 @@ function(require, ModelFactory, Backbone){
     describe('model parsing', function(){
       it("should be able to create model types it knows how to handle", function(){
         var MyCustomModel = Backbone.Model.extend();
-        modelFactory.addHandler({type: 'myCustomModel', handler: MyCustomModel});
+        modelFactory.addHandler('myCustomModel', MyCustomModel);
         var createdModel = modelFactory.createModel({type: 'myCustomModel'});
         expect(createdModel instanceof MyCustomModel).toBe(true);
       });
