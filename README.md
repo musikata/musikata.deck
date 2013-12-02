@@ -21,43 +21,46 @@ With this in mind the Deck is responsible just for the navigation between slides
 ## What is a slide?
 A slide consists of:
 
-1. a title (optional)
-2. a collection of section models.
+1. common slide parameters (e.g. title, id, type)
+2. type-specific parameters
 
-Each section model represents a view.
-
-The idea is to dispatch on view types (as recorded by a 'type' attribute in the section model). View classes for different types of views are configured through dependency injection. At some point, when we create a deck, we pass it a factory that knows how to create views for various section types. This is what allows for extensibility.
+The idea is to handle different types of slides through factory methods. (If this sounds complicated, don't worry, there's an example coming below). The factory methods will dispatch on types (as recorded by a 'type' attribute in the slide definition). Classes for different types of views are configured through dependency injection, by way of plugin registration. This is what allows for extensibility.
 
 For example, we might do something like this:
 
-<code>
-var deckModel = {
+<code></pre>
+var deckDefinition = {
   slides: [
+  
+    // First slide.
     {
-      title: 'Title of the First Slide',
-      sections: [
-        {type: 'html', html: '<p>first slide content</p>'},
-        {type: 'myWidget', widgetData: {...}}
-      ]
+      title: 'First Slide',
+      type: 'html',
+      parameters: {
+        html: "<p>I'm the first slide.</p>"
+      }
+    },
+
+    // Second slide.
+    {
+      title: 'Second Slide',
+      type: 'myCustomType', 
+      parameters: {
+        someCustomParameter: {...},
+        anotherCustomParameter: {...}
+      }
     }
   ]
 };
 
-var myViewFactory = new ViewFactory({
-  handlers: {
-    html: HtmlRenderer,
-    myWidget: MyWidgetRenderer,
-    ...
-  }
-});
+var deckFactory = new DeckFactory();
+deckFactory.modelFactory.addHandler('myCustomType', MyCustomModel);
+deckFactory.viewFactory.addHandler('myCustomType', MyCustomView);
 
-var deckView = new Deck({
-  model: deckModel,
-  viewFactory: myViewFactory
-});
+var deckView = deckFactory.createDeckFromDefinition(deckDefinition);
 
-</code>
+</pre></code>
 
-We assume that there is some sort of contract that created views fulfill to let their parents know that they are ready. For example, a view may have a deferred object that resolves when it is done initializing. This will allow the parent slide to declare its readiness based on when its child sections are ready.
+Individual slides are responsible for letting the deck know when they are ready. For example, a slide might have a deferred object that resolves when it is done initializing.
 
 This will allow us to handle dynamic loading of resources. For example, for loading sound clips for musical exercises without needing to load everything at once.
