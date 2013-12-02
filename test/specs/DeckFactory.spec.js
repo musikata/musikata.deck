@@ -2,8 +2,9 @@ define(
   [
     'require',
     'deck/DeckFactory',
+    'deck/DeckView'
 ],
-function(require, DeckFactory){
+function(require, DeckFactory, DeckView){
 
   ddescribe('DeckFactory', function(){
 
@@ -33,6 +34,21 @@ function(require, DeckFactory){
 
       });
 
+    });
+
+    describe("deck creation", function(){
+      var deckDefinition = {
+        title: 'Deck Title',
+        slides: [
+          {type: 'html', title: 'first slide', html: 'first slide body'},
+          {type: 'html', title: 'second slide', html: 'second slide body'},
+        ]
+      };
+
+      it("should be able to create a deck view from a definition", function(){
+        var deckView = deckFactory.createDeck(deckDefinition);
+        expect(deckView instanceof DeckView).toBe(true);
+      });
     });
 
   });

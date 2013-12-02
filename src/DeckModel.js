@@ -2,41 +2,45 @@ define(
   [
     'underscore',
     'backbone',
-    './SlideCollectionParser',
+    './ModelFactory'
 ],
-function( _, Backbone, SlideCollectionParser){
-  return Backbone.Model.extend({
+function( _, Backbone, ModelFactory){
+
+  var DeckModel = Backbone.Model.extend({
+
     defaults: {
       currentSlideIndex: 0,
       slides: null,
-      initialHearts: 3,
-      currentHearts: 3
     },
 
+    constructor: function(attrs, options){
+      options = options || {};
+      this.modelFactory = options.modelFactory || new ModelFactory();
+      Backbone.Model.apply(this, arguments);
+    },
 
-    // Custom parsing for handling complex nested attributes.
     parse: function(response, options){
-      var parsedResponse = {};
+      var parsedAttrs = {};
       _.each(response, function(value, key){
 
-        // If not given as a collection, parse slides into a collection.
         if (key == 'slides'){
-          if (value instanceof Backbone.Collection){
-            parsedResponse[key] = value;
-          }
-          else {
-            var slideCollectionParser = new SlideCollectionParser();
-            var parsedSlides = slideCollectionParser.parseSlides(value);
-            parsedResponse[key] = parsedSlides;
+          if (! (value instanceof Backbone.Collection)){
+            var slideDefinitions = value;
+            var parsedSlides = new Backbone.Collection();
+            _.each(slideDefinitions, function(slideDefinition){
+              var slideModel = this.modelFactory.createModel(slideDefinition);
+              parsedSlides.add(slideModel);
+            }, this);
+            value = parsedSlides;
           }
         }
-        else{
-          parsedResponse[key] = value;
-        }
+        parsedAttrs[key] = value;
       }, this);
 
-      return parsedResponse;
+      return parsedAttrs;
     },
 
   });
+
+  return DeckModel;
 });
