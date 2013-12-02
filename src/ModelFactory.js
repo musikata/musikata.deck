@@ -14,7 +14,7 @@ function(_){
 
       // Throw error for key collisions.
       if (! _.isUndefined(this._handlers[type])){
-        throw new Error("Key collision: handler already set for type '" 
+        throw new Error("Key collision: handler already set for type '"
                         + type + "', please unregister the "
                         + "existing handler before setting a new one.");
       }
@@ -34,9 +34,15 @@ function(_){
       return handler;
     },
 
-    createModel: function(options){
-      var ModelClass = this.getHandler(options.type);
-      return new ModelClass(options);
+    createModel: function(attrs, options){
+      var defaultOptions = {
+        parse: true,
+        modelFactory: this
+      };
+      var mergedOptions = {};
+      _.extend(mergedOptions, defaultOptions, options);
+      var ModelClass = this.getHandler(attrs.type);
+      return new ModelClass(attrs, mergedOptions);
     }
   });
 

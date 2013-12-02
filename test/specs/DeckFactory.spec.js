@@ -5,7 +5,7 @@ define(
 ],
 function(require, DeckFactory){
 
-  describe('DeckFactory', function(){
+  ddescribe('DeckFactory', function(){
 
     var deckFactory;
     beforeEach(function(){
@@ -17,10 +17,8 @@ function(require, DeckFactory){
 
     describe('model parsing', function(){
 
-      describe('model factory', function(){
-       it("should have a model factory", function(){
-          expect(deckFactory.modelFactory).toBeDefined();
-        });
+      it("should have a model factory", function(){
+        expect(deckFactory.modelFactory).toBeDefined();
       });
 
       describe('core plugins', function(){
