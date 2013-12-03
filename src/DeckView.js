@@ -5,7 +5,7 @@ define(
     './ViewFactory',
     'text!./templates/DeckView.html',
 ],
-function(Backbone, Marionette, DeckViewTemplate){
+function(Backbone, Marionette, ViewFactory, DeckViewTemplate){
 
   var DeckView = Marionette.Layout.extend({
 
@@ -55,8 +55,8 @@ function(Backbone, Marionette, DeckViewTemplate){
       this.model.set('currentSlideIndex', index);
     },
 
-    showSlide: function(slide){
-      var slideView = this.viewFactory.createView(slide);
+    showSlide: function(slideModel){
+      var slideView = this.viewFactory.createView({model: slideModel});
       // DO LOGIC FOR WAITING WHEN SLIDE IS READY HERE? OR AFTER SHOWING THE
       // SLIDE?
       this.slide.show(slideView);

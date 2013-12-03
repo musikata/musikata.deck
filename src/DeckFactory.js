@@ -3,15 +3,18 @@ define(
     'underscore',
     'backbone',
     './ModelFactory',
+    './ViewFactory',
     './CompositeModel',
+    './CompositeView',
     './DeckModel',
     './DeckView'
 ],
-function(_, Backbone, ModelFactory, CompositeModel, DeckModel, DeckView){
+function(_, Backbone, ModelFactory, ViewFactory, CompositeModel, DeckModel, DeckView){
 
   var DeckFactory = function(options){
     options = options || {};
     this.modelFactory = options.modelFactory || new ModelFactory();
+    this.viewFactory = options.viewFactory || new ViewFactory();
 
     // Register core plugins.
     this.modelFactory.addHandler('html', Backbone.Model);
