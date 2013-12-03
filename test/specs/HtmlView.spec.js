@@ -6,7 +6,7 @@ define(
 ],
 function(require, HtmlView, Backbone){
 
-  ddescribe('HtmlView', function(){
+  describe('HtmlView', function(){
 
     // Setup model for each test.
     var htmlModel;

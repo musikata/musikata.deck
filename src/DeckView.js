@@ -9,12 +9,6 @@ function(Backbone, Marionette, ViewFactory, DeckViewTemplate){
 
   var DeckView = Marionette.Layout.extend({
 
-    constructor: function(options){
-      options = options || {};
-      this.viewFactory = options.viewFactory || new ViewFactory();
-      Marionette.Layout.prototype.constructor.apply(this, arguments);
-    },
-
     template: DeckViewTemplate,
 
     regions: {
@@ -56,7 +50,10 @@ function(Backbone, Marionette, ViewFactory, DeckViewTemplate){
     },
 
     showSlide: function(slideModel){
-      var slideView = this.viewFactory.createView({model: slideModel});
+      var slideView = this.options.viewFactory.createView({
+        model: slideModel,
+        viewFactory: this.options.viewFactory
+      });
       // DO LOGIC FOR WAITING WHEN SLIDE IS READY HERE? OR AFTER SHOWING THE
       // SLIDE?
       this.slide.show(slideView);

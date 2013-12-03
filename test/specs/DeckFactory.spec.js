@@ -6,7 +6,7 @@ define(
 ],
 function(require, DeckFactory, DeckView){
 
-  xdescribe('DeckFactory', function(){
+  ddescribe('DeckFactory', function(){
 
     var deckFactory;
     beforeEach(function(){
@@ -55,6 +55,7 @@ function(require, DeckFactory, DeckView){
 
       it("should have the correct content", function(){
         var deckView = deckFactory.createDeck(deckDefinition);
+        deckView.render();
         deckView.goToSlide(0);
         expect(deckView.$el.html()).toContain('first slide');
         deckView.goToSlide(1);
