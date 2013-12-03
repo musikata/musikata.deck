@@ -1,10 +1,36 @@
 define(
   [
     'require',
+    'underscore',
     'deck/DeckModel',
-    'deck/DeckView'
+    'deck/DeckView',
+    'deck/HtmlView',
+    'deck/ViewFactory'
 ],
-function(require, DeckModel, DeckView){
+function(require, _, DeckModel, DeckView, HtmlView, ViewFactory){
+
+  // Setup viewFactory.
+  var viewFactory = new ViewFactory();
+  viewFactory.addHandler('html', HtmlView);
+
+  var createTestModels = function(options){
+    var defaultOptions = {
+      numSlides: 2
+    };
+
+    var mergedOptions = _.extend({}, defaultOptions, options);
+
+    var testModels = {};
+
+    var slideModels = [];
+    for(var i=0; i < mergedOptions.numSlides; i++){
+      slideModels.push(new Backbone.Model({type: 'html', html: 'slide ' + i}));
+    }
+    testModels.slides = new Backbone.Collection(slideModels);
+    testModels.deck = new DeckModel({slides: testModels.slides});
+
+    return testModels;
+  };
 
   describe('DeckView', function(){
 
@@ -15,22 +41,14 @@ function(require, DeckModel, DeckView){
     describe('initial render', function(){
 
       describe('if there are slides', function(){
-        var deckModel;
+        var testModels;
         var deckView;
-        var slides;
-
         beforeEach(function(){
-
-          // Setup test models.
-          deckModel = new DeckModel({
-            slides: [{}, {}, {}]
-          }, {parse: true});
-          slides = deckModel.get('slides');
-
+          testModels = createTestModels();
           deckView = new DeckView({
-            model: deckModel,
+            model: testModels.deck,
+            viewFactory: viewFactory
           });
-
         });
 
         afterEach(function(){
@@ -39,7 +57,7 @@ function(require, DeckModel, DeckView){
 
         it('shows the first slide after initialization', function(){
           spyOn(deckView, 'showSlide');
-          var firstSlideModel = slides.at(0);
+          var firstSlideModel = testModels.slides.at(0);
           deckView.render();
           expect(deckView.showSlide).toHaveBeenCalledWith(firstSlideModel);
         });
@@ -47,21 +65,12 @@ function(require, DeckModel, DeckView){
 
       describe('if there are no slides', function(){
 
-        var deckModel;
-        var deckView;
-        var slides;
-
         beforeEach(function(){
-
-          // Setup test models.
-          deckModel = new DeckModel({
-            slides: []
-          });
-
+          testModels = createTestModels({numSlides: 0});
           deckView = new DeckView({
-            model: deckModel,
+            model: testModels.deck,
+            viewFactory: viewFactory
           });
-
         });
 
         afterEach(function(){
@@ -78,25 +87,15 @@ function(require, DeckModel, DeckView){
 
     describe('after initialization', function(){
 
-      var deckModel;
+      var testModels;
       var deckView;
-      var slides;
 
       beforeEach(function(){
-        deckModel = new DeckModel({
-          slides: [
-            {id: 'slide1'},
-            {id: 'slide2'},
-            {id: 'slide3'}
-          ]
-        }, {parse: true});
-
-        slides = deckModel.get('slides');
-
+        testModels = createTestModels({numSlides: 2});
         deckView = new DeckView({
-          model: deckModel,
+          model: testModels.deck,
+          viewFactory: viewFactory
         });
-
         deckView.render();
       });
 
@@ -106,62 +105,17 @@ function(require, DeckModel, DeckView){
 
       it('renders the current slide when the currentSlideIndex changes', function(){
         spyOn(deckView, 'showSlide');
-        deckModel.set({'currentSlideIndex': 1});
-        var newCurrentSlideModel = slides.at(1);
+        testModels.deck.set({'currentSlideIndex': 1});
+        var newCurrentSlideModel = testModels.slides.at(1);
         expect(deckView.showSlide).toHaveBeenCalledWith(
           newCurrentSlideModel);
       });
 
       it('increments currentSlideIndex when the next slide event is fired', function(){
-        var oldCurrentSlideIndex = deckModel.get('currentSlideIndex');
+        var oldCurrentSlideIndex = testModels.deck.get('currentSlideIndex');
         deckView.trigger('advanceSlide');
-        var newCurrentSlideIndex = deckModel.get('currentSlideIndex');
+        var newCurrentSlideIndex = testModels.deck.get('currentSlideIndex');
         expect(newCurrentSlideIndex).toBe(oldCurrentSlideIndex + 1);
-      });
-
-      // note: might want to move this into subclass later.
-      describe('when a slide submission event is triggered', function(){
-
-        var checkEnableNextButton = function(submissionData){
-          var spy = spyOn(deckView, 'enableNextButton');
-          deckView.trigger('slide:submitted', submissionData);
-          expect(spy).toHaveBeenCalled();
-        };
-
-        describe("when the submission result is a pass", function(){
-
-          var submissionData = {result: 'pass'};
-
-          it("enables the 'next' button", function(){
-            checkEnableNextButton(submissionData);
-          });
-
-          it("does not decrement the heart count", function(){
-            var previousHearts = deckView.model.get('currentHearts');
-            deckView.trigger('slide:submitted', submissionData);
-            var newHearts = deckView.model.get('currentHearts');
-            expect(newHearts).toEqual(previousHearts);
-          });
-
-
-        });
-
-        describe("when the submission result is a fail", function(){
-
-          var submissionData = {result: 'fail'};
-
-          it("enables the 'next' button", function(){
-            checkEnableNextButton(submissionData);
-          });
-
-          it("decrements the heart count", function(){
-            var previousHearts = deckView.model.get('currentHearts');
-            deckView.trigger('slide:submitted', submissionData);
-            var newHearts = deckView.model.get('currentHearts');
-            expect(newHearts).toEqual(previousHearts - 1);
-          });
-        });
-
       });
 
       describe("the 'next' button", function(){
@@ -184,7 +138,7 @@ function(require, DeckModel, DeckView){
 
             describe("when we're on the last slide", function(){
               beforeEach(function(){
-                deckModel.set('currentSlideIndex', deckModel.get('slides').length - 1);
+                testModels.deck.set('currentSlideIndex', testModels.slides.length - 1);
               });
 
               it("should trigger a deck:completed event", function(){

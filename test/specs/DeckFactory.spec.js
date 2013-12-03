@@ -6,7 +6,7 @@ define(
 ],
 function(require, DeckFactory, DeckView){
 
-  ddescribe('DeckFactory', function(){
+  describe('DeckFactory', function(){
 
     var deckFactory;
     beforeEach(function(){

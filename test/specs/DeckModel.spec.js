@@ -26,14 +26,6 @@ define(
         expect(deckModel.get('currentSlideIndex')).toBeDefined();
       });
 
-      it('should have an initialHearts attribute', function(){
-        expect(deckModel.get('initialHearts')).toBeDefined();
-      });
-
-      it('should have a currentHearts attribute', function(){
-        expect(deckModel.get('currentHearts')).toBeDefined();
-      });
-
     });
 
   });
