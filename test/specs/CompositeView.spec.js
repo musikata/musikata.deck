@@ -9,7 +9,7 @@ define(
 ],
 function(require, _, CompositeView, ViewFactory, Backbone){
 
-  ddescribe('CompositeView', function(){
+  describe('CompositeView', function(){
 
     // Setup view factory w/ a basic html view.
     var HtmlView = Marionette.ItemView.extend({
