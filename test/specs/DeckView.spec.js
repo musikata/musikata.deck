@@ -113,7 +113,7 @@ function(require, _, DeckModel, DeckView, HtmlView, ViewFactory){
 
       it('increments currentSlideIndex when the next slide event is fired', function(){
         var oldCurrentSlideIndex = testModels.deck.get('currentSlideIndex');
-        deckView.trigger('advanceSlide');
+        deckView.trigger('goToNextSlide');
         var newCurrentSlideIndex = testModels.deck.get('currentSlideIndex');
         expect(newCurrentSlideIndex).toBe(oldCurrentSlideIndex + 1);
       });
@@ -122,6 +122,10 @@ function(require, _, DeckModel, DeckView, HtmlView, ViewFactory){
 
         it("should be present", function(){
           expect(deckView.ui.nextButton.length).toEqual(1);
+        });
+
+        it("should have 'next' as its label", function(){
+          expect(deckView.ui.nextButton.html()).toEqual('next');
         });
 
         describe("when the 'next' button is enabled", function(){
@@ -138,7 +142,7 @@ function(require, _, DeckModel, DeckView, HtmlView, ViewFactory){
 
             describe("when we're on the last slide", function(){
               beforeEach(function(){
-                testModels.deck.set('currentSlideIndex', testModels.slides.length - 1);
+                deckView.goToSlide(testModels.slides.length - 1);
               });
 
               it("should trigger a deck:completed event", function(){
@@ -148,10 +152,10 @@ function(require, _, DeckModel, DeckView, HtmlView, ViewFactory){
                 expect(spy).toHaveBeenCalled();
               });
             });
-            
+
             describe("when we're not on the last slide", function(){
               it("should advance to the next slide", function(){
-                var spy = spyOn(deckView, 'advanceSlide');
+                var spy = spyOn(deckView, 'goToNextSlide');
                 deckView.ui.nextButton.trigger('click');
                 expect(spy).toHaveBeenCalled();
               });
@@ -178,6 +182,58 @@ function(require, _, DeckModel, DeckView, HtmlView, ViewFactory){
             expect(spy).not.toHaveBeenCalled();
           });
         });
+      });
+
+      describe("the 'previous' button", function(){
+
+        it("should be present", function(){
+          expect(deckView.ui.previousButton.length).toEqual(1);
+        });
+
+        it("should have 'previous' as its label", function(){
+          expect(deckView.ui.previousButton.html()).toEqual('previous');
+        });
+
+        describe("when it's enabled", function(){
+
+          beforeEach(function(){
+            deckView.goToNextSlide();
+            deckView.enablePreviousButton();
+          });
+
+          it("should have an enabled class", function(){
+            expect(deckView.ui.previousButton.hasClass('enabled')).toBe(true);
+          });
+
+          describe("when it's clicked", function(){
+            it("should go back to the previous slide", function(){
+              var startIndex = deckView.model.get('currentSlideIndex');
+              deckView.ui.previousButton.trigger('click');
+              var endIndex = deckView.model.get('currentSlideIndex');
+              expect(endIndex).toEqual(startIndex - 1);
+            });
+          });
+        });
+
+        describe("when it's not enabled", function(){
+          it("should ignore click events", function(){
+            var spy = spyOn(deckView, 'onClickNextButton');
+            deckView.ui.nextButton.trigger('click');
+            expect(spy).not.toHaveBeenCalled();
+          });
+        });
+
+        describe("when we're on the first slide", function(){
+          it("the previous button should be disabled", function(){
+            expect(deckView.ui.previousButton.hasClass('enabled')).toBe(false);
+          });
+        });
+
+        describe("when we're not on the first slide", function(){
+          it("the previous button should be enabled", function(){
+          });
+        });
+
       });
 
     });

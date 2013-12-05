@@ -16,18 +16,35 @@ function(Backbone, Marionette, ViewFactory, DeckViewTemplate){
     },
 
     ui: {
-      nextButton: '[data-role="nextButton"]'
+      nextButton: '[data-role="nextButton"]',
+      previousButton: '[data-role="previousButton"]',
+      progressBar: '.progress-bar'
     },
 
     initialize: function(){
       this.model.on('change:currentSlideIndex', this.showCurrentSlide, this);
       this.on('advanceSlide', this.advanceSlide, this);
-      this.on('slide:submitted', this.onSlideSubmitted, this);
+      this.on('goToNextSlide', this.goToNextSlide, this);
+      this.on('goToPreviousSlide', this.goToPreviousSlide, this);
     },
 
-    advanceSlide: function(){
+    goToNextSlide: function(){
       var oldIndex = this.model.get('currentSlideIndex');
-      this.model.set('currentSlideIndex', oldIndex + 1);
+      this.goToSlide(oldIndex + 1);
+    },
+
+    goToPreviousSlide: function(){
+      var oldIndex = this.model.get('currentSlideIndex');
+      this.goToSlide(oldIndex - 1);
+    },
+
+    goToSlide: function(index){
+      if  (index < 0 || index >= this.model.get('slides').length){
+        throw new Error("Slide index '" + index + "' is out-of-bounds");
+      }
+
+      this.model.set('currentSlideIndex', index);
+
     },
 
     onRender: function(){
@@ -43,10 +60,6 @@ function(Backbone, Marionette, ViewFactory, DeckViewTemplate){
       var currentSlide = this.model.get('slides').at(
         this.model.get('currentSlideIndex'));
       this.showSlide(currentSlide);
-    },
-
-    goToSlide: function(index){
-      this.model.set('currentSlideIndex', index);
     },
 
     showSlide: function(slideModel){
@@ -73,11 +86,6 @@ function(Backbone, Marionette, ViewFactory, DeckViewTemplate){
       }
     },
 
-    decrementHearts: function(){
-      var currentHearts = this.model.get('currentHearts');
-      this.model.set('currentHearts', currentHearts - 1);
-    },
-
     // NOTE: later on might want to factor out nav buttons into their own view.
     enableNextButton: function(){
       this.ui.nextButton.addClass('enabled');
@@ -94,8 +102,25 @@ function(Backbone, Marionette, ViewFactory, DeckViewTemplate){
         this.trigger('deck:completed');
       }
       else{
-        this.advanceSlide();
+        this.goToNextSlide();
       }
+    },
+
+    enablePreviousButton: function(){
+      if (this.ui.previousButton.hasClass('enabled')){
+        return;
+      }
+      this.ui.previousButton.addClass('enabled');
+      this.ui.previousButton.on('click', _.bind(this.onClickPreviousButton, this));
+    },
+
+    disablePreviousButton: function(){
+      this.ui.previousButton.removeClass('enabled');
+      this.ui.previousButton.off('click');
+    },
+
+    onClickPreviousButton: function(){
+      this.goToPreviousSlide();
     },
 
     onBeforeClose: function(){

@@ -1,4 +1,12 @@
-<div class="slide-deck-view">
+<div class="deck-view">
+    <div class="progress-bar">
+        <ul>
+            {{#each slides.models}}
+            <li id="slide-{{cid}}"></li>
+            {{/each}}
+        </ul>
+    </div>
     <div data-role="slideRegion"></div>
-    <div data-role="nextButton"></div>
+    <div data-role="previousButton">previous</div>
+    <div data-role="nextButton">next</div>
 </div>
