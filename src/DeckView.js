@@ -2,14 +2,15 @@ define(
   [
     'backbone',
     'marionette',
+    'handlebars',
     './ViewFactory',
     'text!./templates/DeckView.html',
 ],
-function(Backbone, Marionette, ViewFactory, DeckViewTemplate){
+function(Backbone, Marionette, HB, ViewFactory, DeckViewTemplate){
 
   var DeckView = Marionette.Layout.extend({
 
-    template: DeckViewTemplate,
+    template: HB.compile(DeckViewTemplate),
 
     regions: {
       slide: '[data-role="slideRegion"]'

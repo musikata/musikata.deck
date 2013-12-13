@@ -1,12 +1,20 @@
-<div class="deck-view">
-    <div class="progress-bar">
-        <ul>
-            {{#each slides.models}}
-            <li id="slide-{{cid}}"></li>
-            {{/each}}
-        </ul>
-    </div>
-    <div data-role="slideRegion"></div>
-    <div data-role="previousButton">previous</div>
-    <div data-role="nextButton">next</div>
+<div>
+    <header class="app-header">
+        <div class="progress-bar">
+            <ul>
+                {{#each slides.models}}
+                <li id="slide-{{cid}}"></li>
+                {{/each}}
+            </ul>
+        </div>
+    </header>
+
+    <section class="app-body">
+        <div data-role="slideRegion"></div>
+    </section>
+
+    <footer class="app-footer">
+        <div data-role="previousButton">previous</div>
+        <div data-role="nextButton">next</div>
+    </footer>
 </div>
