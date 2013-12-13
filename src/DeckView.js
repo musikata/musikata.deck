@@ -46,6 +46,23 @@ function(Backbone, Marionette, HB, ViewFactory, DeckViewTemplate){
 
       this.model.set('currentSlideIndex', index);
 
+      // Update progress bar.
+      // NOTE: might want to put progress bar in it's own view
+      // later.
+      this.updateProgressBar();
+
+    },
+
+    updateProgressBar: function(){
+      var curIdx = this.model.get('currentSlideIndex');
+      this.ui.progressBar.find('li').each(function(idx, el){
+        if (idx < curIdx){
+          $(el).addClass('done');
+        }
+        else{
+          $(el).removeClass('done');
+        }
+      });
     },
 
     onRender: function(){
