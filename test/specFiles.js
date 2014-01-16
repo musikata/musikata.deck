@@ -12,6 +12,10 @@ var specFiles = [
   'ModelFactory.spec.js',
   'SlideModel.spec.js',
   'ViewFactory.spec.js',
+  'ExerciseDeckView.spec.js',
+  'ExerciseDeckModel.spec.js',
+  'HealthModel.spec.js',
+  'HealthView.spec.js',
 ];
 
 // Prefix specs with specsDir.
