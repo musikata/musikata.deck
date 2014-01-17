@@ -1,13 +1,13 @@
 define(
   [
-  'backbone',
+  './DeckModel',
   './HealthModel'
 ],
 function(
-  Backbone,
+  DeckModel,
   HealthModel
 ){
-  var ExerciseDeckModel = Backbone.Model.extend({
+  var ExerciseDeckModel = DeckModel.extend({
     defaults: {
       result: null
     },
