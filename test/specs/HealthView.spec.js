@@ -1,12 +1,30 @@
 define(
   [
-  'deck/HealthView'
+  'deck/HealthView',
+  'backbone'
 ],
 function(
-  HealthView
+  HealthView,
+  Backbone
 ){
 
   describe('HealthView', function(){
+
+    var healthView;
+    var healthModel;
+
+    var generateHealthView = function(){
+      healthModel = new Backbone.Model({
+        size: 3,
+      });
+    };
+
+    afterEach(function(){
+      if (healthView){
+        healthView.remove();
+        healthView = null;
+      }
+    });
 
     it('should be defined', function(){
       expect(HealthView).toBeDefined();
