@@ -31,6 +31,16 @@ function(
         expect(model.get('currentHealth')).toEqual(3);
       });
 
+      it('decrementCurrentHealth shoudld reduce currentHealth by default or x', function(){
+        var model = new HealthModel({
+          size: 3
+        });
+        model.decrementCurrentHealth();
+        expect(model.get('currentHealth')).toEqual(2);
+        model.decrementCurrentHealth(2);
+        expect(model.get('currentHealth')).toEqual(0);
+      });
+
     });
 
   });
