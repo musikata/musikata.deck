@@ -7,7 +7,7 @@ function(
   HealthView,
   HealthModel
 ){
-  ddescribe('HealthView', function(){
+  describe('HealthView', function(){
 
     var generateHealthView = function(){
       var healthModel = new HealthModel({
