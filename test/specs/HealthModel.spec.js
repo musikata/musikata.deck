@@ -6,7 +6,7 @@ function(
   HealthModel
 ){
 
-  describe('HealthModel', function(){
+  ddescribe('HealthModel', function(){
 
     it('should be defined', function(){
       expect(HealthModel).toBeDefined();
