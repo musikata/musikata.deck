@@ -7,12 +7,12 @@ define(
     './CompositeModel',
     './HtmlView',
     './CompositeView',
-    './DeckModel',
-    './DeckView'
+    './BaseDeckModel',
+    './BaseDeckView'
 ],
-function(_, Backbone, ModelFactory, ViewFactory, CompositeModel, HtmlView, CompositeView, DeckModel, DeckView){
+function(_, Backbone, ModelFactory, ViewFactory, CompositeModel, HtmlView, CompositeView, BaseDeckModel, BaseDeckView){
 
-  var DeckFactory = function(options){
+  var BaseDeckFactory = function(options){
     options = options || {};
     this.modelFactory = options.modelFactory || new ModelFactory();
     this.viewFactory = options.viewFactory || new ViewFactory();
@@ -26,9 +26,9 @@ function(_, Backbone, ModelFactory, ViewFactory, CompositeModel, HtmlView, Compo
     this.viewFactory.addHandler('composite', CompositeView);
   };
 
-  _.extend(DeckFactory.prototype, {
+  _.extend(BaseDeckFactory.prototype, {
     createDeck: function(deckDefinition, viewOptions){
-      var deckModel = new DeckModel(deckDefinition, {
+      var deckModel = new BaseDeckModel(deckDefinition, {
         parse: true,
         modelFactory: this.modelFactory
       });
@@ -38,10 +38,10 @@ function(_, Backbone, ModelFactory, ViewFactory, CompositeModel, HtmlView, Compo
         viewFactory: this.viewFactory
       }, viewOptions);
 
-      var deckView = new DeckView(mergedViewOptions);
+      var deckView = new BaseDeckView(mergedViewOptions);
       return deckView;
     }
   });
 
-  return DeckFactory;
+  return BaseDeckFactory;
 });

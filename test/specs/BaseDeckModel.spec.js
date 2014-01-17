@@ -1,13 +1,13 @@
 define(
   [
     'require',
-    'deck/DeckModel',
-], function(require, DeckModel){
+    'deck/BaseDeckModel',
+], function(require, BaseDeckModel){
 
-  describe('DeckModel', function(){
+  describe('BaseDeckModel', function(){
 
     it('should be defined', function(){
-      expect(DeckModel).toBeDefined();
+      expect(BaseDeckModel).toBeDefined();
     });
 
     describe('default attributes', function(){
@@ -15,7 +15,7 @@ define(
       var deckModel;
 
       beforeEach(function(){
-        deckModel = new DeckModel();
+        deckModel = new BaseDeckModel();
       });
 
       it('should have a slides attribute', function(){

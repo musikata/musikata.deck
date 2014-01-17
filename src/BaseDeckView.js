@@ -4,13 +4,13 @@ define(
     'marionette',
     'handlebars',
     './ViewFactory',
-    'text!./templates/DeckView.html',
+    'text!./templates/BaseDeckView.html',
 ],
-function(Backbone, Marionette, HB, ViewFactory, DeckViewTemplate){
+function(Backbone, Marionette, HB, ViewFactory, BaseDeckViewTemplate){
 
-  var DeckView = Marionette.Layout.extend({
+  var BaseDeckView = Marionette.Layout.extend({
 
-    template: HB.compile(DeckViewTemplate),
+    template: HB.compile(BaseDeckViewTemplate),
 
     regions: {
       slide: '[data-role="slideRegion"]'
@@ -66,12 +66,26 @@ function(Backbone, Marionette, HB, ViewFactory, DeckViewTemplate){
     },
 
     onRender: function(){
+      // Wire completion event.
+      this.on('deck:completed', this.onCompleted, this);
+
+      // Wire slide region show/close events.
+      this.slide.on('show', this.onSlideShow, this);
+      this.slide.on('close', this.onSlideClose, this);
+
       // Render initial slide if present and currentSlideIndex is set.
       if (this.model.get('slides')
           && this.model.get('slides').length
         && (this.model.get('currentSlideIndex') != undefined)) {
           this.showCurrentSlide();
       }
+
+    },
+
+    onSlideShow: function(){
+    },
+
+    onSlideClose: function(){
     },
 
     showCurrentSlide: function(){
@@ -88,20 +102,6 @@ function(Backbone, Marionette, HB, ViewFactory, DeckViewTemplate){
       // DO LOGIC FOR WAITING WHEN SLIDE IS READY HERE? OR AFTER SHOWING THE
       // SLIDE?
       this.slide.show(slideView);
-    },
-
-    // NOTE: later we might want to put this into a subclass,
-    // e.g. 'TestSlideDeck', or 'ExerciseSlideDeck'.
-    onSlideSubmitted: function(data){
-
-      this.enableNextButton();
-
-      if (data.result == 'pass'){
-        // Nothing here yet...
-      }
-      else if (data.result == 'fail'){
-        this.decrementHearts();
-      }
     },
 
     // NOTE: later on might want to factor out nav buttons into their own view.
@@ -143,9 +143,12 @@ function(Backbone, Marionette, HB, ViewFactory, DeckViewTemplate){
 
     onBeforeClose: function(){
       return true;
+    },
+
+    onCompleted: function(){
     }
 
   });
 
-  return DeckView;
+  return BaseDeckView;
 });

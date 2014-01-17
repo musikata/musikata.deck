@@ -1,16 +1,16 @@
 define(
   [
     'require',
-    'deck/DeckFactory',
-    'deck/DeckView'
+    'deck/BaseDeckFactory',
+    'deck/BaseDeckView'
 ],
-function(require, DeckFactory, DeckView){
+function(require, BaseDeckFactory, BaseDeckView){
 
-  describe('DeckFactory', function(){
+  describe('BaseDeckFactory', function(){
 
     var deckFactory;
     beforeEach(function(){
-      deckFactory = new DeckFactory();
+      deckFactory = new BaseDeckFactory();
     });
     afterEach(function(){
       deckFactory = undefined;
@@ -50,7 +50,7 @@ function(require, DeckFactory, DeckView){
 
       it("should be able to create a deck view from a definition", function(){
         var deckView = deckFactory.createDeck(deckDefinition);
-        expect(deckView instanceof DeckView).toBe(true);
+        expect(deckView instanceof BaseDeckView).toBe(true);
       });
 
       it("should have the correct content", function(){

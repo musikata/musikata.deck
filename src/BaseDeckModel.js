@@ -6,7 +6,7 @@ define(
 ],
 function( _, Backbone, ModelFactory){
 
-  var DeckModel = Backbone.Model.extend({
+  var BaseDeckModel = Backbone.Model.extend({
 
     defaults: {
       currentSlideIndex: 0,
@@ -42,5 +42,5 @@ function( _, Backbone, ModelFactory){
 
   });
 
-  return DeckModel;
+  return BaseDeckModel;
 });

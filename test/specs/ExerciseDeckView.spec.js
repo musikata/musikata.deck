@@ -1,12 +1,14 @@
 define(
   [
   'underscore',
+  './DeckViewCommon',
   'deck/ExerciseDeckModel',
   'deck/ExerciseDeckView',
   'deck/ViewFactory',
 ],
 function(
   _, 
+  DeckViewCommon,
   ExerciseDeckModel,
   ExerciseDeckView, 
   ViewFactory
@@ -35,11 +37,17 @@ function(
       }
     });
 
-    // Setup viewFactory.
-    var viewFactory = new ViewFactory();
-    viewFactory.addHandler('silly', SillyExercise);
+    /*
+     * Define generator functions.
+     */
 
-    var createTestModels = function(options){
+    var generateViewFactory = function(){
+      var viewFactory = new ViewFactory();
+      viewFactory.addHandler('silly', SillyExercise);
+      return viewFactory;
+    }
+
+    var generateTestModels = function(options){
       var defaultOptions = {
         numSlides: 4
       };
@@ -58,46 +66,83 @@ function(
       return testModels;
     };
 
-    var generateExerciseDeckView = function(){
-      var testModels = createTestModels();
-
-      var view = new ExerciseDeckView({
+    var generateDeckView = function(){
+      var testModels = generateTestModels();
+      var deckView = new ExerciseDeckView({
         model: testModels.deck,
-        viewFactory: viewFactory
+        viewFactory: generateViewFactory()
       });
-
-      return view;
+      return deckView;
     };
 
+    // Run common deck view tests.
+    DeckViewCommon.testDeckView({
+      DeckView: ExerciseDeckView,
+      generateViewFactory: generateViewFactory,
+      generateTestModels: generateTestModels
+    });
+
     it('should display health', function(){
-      var view = generateExerciseDeckView();
+      var view = generateDeckView();
       view.render();
       expect(view.$el.find('.health').length).toEqual(1);
       expect(view.$el.find('.health_unit').length).toBeGreaterThan(0);
       view.remove();
     });
 
-    it('should decrement current health when slide result is fail', function(){
-      var view = generateExerciseDeckView();
-      var healthModel = view.model.get('health');
+    it('should decrement health when slide result is fail', function(){
+      var view = generateDeckView();
       view.render();
-      view.slide.view.model.set('result', 'fail');
+      var healthModel = view.model.get('health');
+      view.slide.currentView.model.set('result', 'fail');
       var expectedHealth = healthModel.get('size') - 1;
       var actualHealth = healthModel.get('currentHealth');
       expect(expectedHealth).toEqual(actualHealth);
       view.remove();
     });
 
-    it('should advance slide when slide result is pass', function(){
-      this.fail('TODO');
+    it('should not decrement health when slide result is pass', function(){
+      var view = generateDeckView();
+      view.render();
+      var healthModel = view.model.get('health');
+      view.slide.currentView.model.set('result', 'pass');
+      var expectedHealth = healthModel.get('size');
+      var actualHealth = healthModel.get('currentHealth');
+      expect(expectedHealth).toEqual(actualHealth);
+      view.remove();
     });
 
-    it('should fail deck when health is gone', function(){
-      this.fail('TODO');
+    it('should fail deck when health is empty', function(){
+      var view = generateDeckView();
+      view.render();
+
+      var failed = null;
+
+      view.model.on('change:result', function(model){
+        failed = (model.get('result') == 'fail');
+      });
+
+      var healthModel = view.model.get('health');
+      healthModel.trigger('empty');
+
+      expect(failed).toBe(true);
+      view.remove();
     });
 
     it('should pass deck if we get to the end and still have health', function(){
-      this.fail('TODO');
+      var view = generateDeckView();
+      view.render();
+
+      var passed = null;
+
+      view.model.on('change:result', function(model){
+        passed = (model.get('result') == 'pass');
+      });
+
+      view.trigger('deck:completed');
+
+      expect(passed).toBe(true);
+      view.remove();
     });
 
   });
