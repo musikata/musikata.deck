@@ -1,0 +1,20 @@
+<header class="app-header">
+    <div class="progress-bar">
+        <ul>
+            {{#each slides.models}}
+            <li id="slide-{{cid}}"></li>
+            {{/each}}
+        </ul>
+    </div>
+
+    <div class="health_container"></div>
+</header>
+
+<section class="app-body">
+    <div data-role="deck_container"></div>
+</section>
+
+<footer class="app-footer">
+    <div data-role="previousButton">previous</div>
+    <div data-role="nextButton">next</div>
+</footer>

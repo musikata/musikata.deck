@@ -6,7 +6,8 @@ define(function(require){
   var ExerciseDeckRunnerModel = Backbone.Model.extend({
 
     defaults: {
-      result: null
+      result: null,
+      deck: null
     },
 
     initialize: function(){
@@ -15,6 +16,11 @@ define(function(require){
       var health = this.get('health');
       if (! (health instanceof HealthModel)){
         this.set('health', new HealthModel(health));
+      }
+
+      var deck = this.get('deck');
+      if (! (deck instanceof DeckModel)){
+        this.set('deck', new DeckModel(deck, {parse: true}));
       }
     }
   });

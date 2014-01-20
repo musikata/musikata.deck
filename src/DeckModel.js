@@ -38,6 +38,10 @@ define(function(require){
       return parsedAttrs;
     },
 
+    getCurrentSlideModel: function(){
+      return this.get('slides').at(this.get('currentSlideIndex'));
+    }
+
   });
 
   return DeckModel;
