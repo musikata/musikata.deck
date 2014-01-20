@@ -1,14 +1,7 @@
-define(
-  [
-  'marionette',
-  'handlebars',
-  'text!./templates/HealthView.html'
-],
-function(
-  Marionette,
-  Handlebars,
-  HealthViewTemplate
-){
+define(function(require){
+  var Marionette = require('marionette');
+  var Handlebars = require('handlebars');
+  var HealthViewTemplate = require('text!./templates/HealthView.html');
 
   var HealthView = Marionette.ItemView.extend({
     template: Handlebars.compile(HealthViewTemplate),

@@ -1,10 +1,7 @@
-define(
-  [
-    'underscore',
-    'backbone',
-    './ModelFactory',
-],
-function(_, Backbone, ModelFactory){
+define(function(require){
+  var underscore = require('underscore');
+  var Backbone = require('backbone');
+  var ModelFactory = require('./ModelFactory');
 
   var CompositeModel = Backbone.Model.extend({
     constructor: function(attrs, options){

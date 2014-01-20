@@ -1,14 +1,12 @@
-define(
-  [
-    'require',
-    'deck/ExerciseDeckModel',
-    'deck/HealthModel',
-], function(require, ExerciseDeckModel, HealthModel){
+define(function(require){
 
-  describe('ExerciseDeckModel', function(){
+  var ExerciseDeckRunnerModel = require('deck/ExerciseDeckRunnerModel');
+  var HealthModel = require('deck/HealthModel');
+
+  describe('ExerciseDeckRunnerModel', function(){
 
     it('should be defined', function(){
-      expect(ExerciseDeckModel).toBeDefined();
+      expect(ExerciseDeckRunnerModel).toBeDefined();
     });
 
     describe('default attributes', function(){
@@ -16,7 +14,7 @@ define(
       var model;
 
       beforeEach(function(){
-        model = new ExerciseDeckModel();
+        model = new ExerciseDeckRunnerModel();
       });
 
       it('should have a health attribute', function(){

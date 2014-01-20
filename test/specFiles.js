@@ -5,19 +5,16 @@
 var specFiles = [
   'CompositeModel.spec.js',
   'CompositeView.spec.js',
-  'BaseDeckFactory.spec.js',
-  'BaseDeckModel.spec.js',
-  'DeckViewCommon.js',
+  'DeckFactory.spec.js',
+  'DeckModel.spec.js',
   'HtmlView.spec.js',
   'ModelFactory.spec.js',
   'SlideModel.spec.js',
   'ViewFactory.spec.js',
-  'ExerciseDeckViewCommon.js',
-  'ExerciseDeckView.spec.js',
-  'ExerciseDeckModel.spec.js',
   'HealthModel.spec.js',
   'HealthView.spec.js',
-  'ExerciseDeckRunner.spec.js',
+  'ExerciseDeckRunnerModel.spec.js',
+  'ExerciseDeckRunnerView.spec.js',
 ];
 
 // Prefix specs with specsDir.

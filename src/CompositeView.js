@@ -1,10 +1,7 @@
-define(
-  [
-    'underscore',
-    'backbone',
-    'marionette',
-],
-function(_, Backbone, Marionette){
+define(function(require){
+  var _ = require('underscore');
+  var Backbone = require('backbone');
+  var Marionette = require('marionette');
 
   var CompositeView = Marionette.CompositeView.extend({
     template: _.template('<div class="testo"></div>'),

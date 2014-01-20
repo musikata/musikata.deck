@@ -1,8 +1,5 @@
-define(
-  [
-    'underscore'
-],
-function(_){
+define(function(require){
+  _ = require('underscore');
 
   var BaseFactory = function(options){
     options = options || {};

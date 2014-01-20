@@ -1,12 +1,10 @@
-define(
-  [
-    'underscore',
-    'backbone',
-    './ModelFactory'
-],
-function( _, Backbone, ModelFactory){
+define(function(require){
 
-  var BaseDeckModel = Backbone.Model.extend({
+  var _ = require('underscore');
+  var Backbone = require('backbone');
+  var ModelFactory = require('./ModelFactory');
+
+  var DeckModel = Backbone.Model.extend({
 
     defaults: {
       currentSlideIndex: 0,
@@ -42,5 +40,5 @@ function( _, Backbone, ModelFactory){
 
   });
 
-  return BaseDeckModel;
+  return DeckModel;
 });

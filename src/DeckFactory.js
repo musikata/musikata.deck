@@ -1,18 +1,16 @@
-define(
-  [
-    'underscore',
-    'backbone',
-    './ModelFactory',
-    './ViewFactory',
-    './CompositeModel',
-    './HtmlView',
-    './CompositeView',
-    './BaseDeckModel',
-    './BaseDeckView'
-],
-function(_, Backbone, ModelFactory, ViewFactory, CompositeModel, HtmlView, CompositeView, BaseDeckModel, BaseDeckView){
+define(function(require){
 
-  var BaseDeckFactory = function(options){
+  var _ = require('underscore');
+  var Bacbone = require('backbone');
+  var ModelFactory = require('./ModelFactory');
+  var ViewFactory = require('./ViewFactory');
+  var HtmlView = require('./HtmlView');
+  var CompositeModel = require('./CompositeModel');
+  var CompositeView = require('./CompositeView');
+  var DeckModel = require('./DeckModel');
+  var DeckView = require('./DeckView');
+
+  var DeckFactory = function(options){
     options = options || {};
     this.modelFactory = options.modelFactory || new ModelFactory();
     this.viewFactory = options.viewFactory || new ViewFactory();
@@ -26,9 +24,9 @@ function(_, Backbone, ModelFactory, ViewFactory, CompositeModel, HtmlView, Compo
     this.viewFactory.addHandler('composite', CompositeView);
   };
 
-  _.extend(BaseDeckFactory.prototype, {
+  _.extend(DeckFactory.prototype, {
     createDeck: function(deckDefinition, viewOptions){
-      var deckModel = new BaseDeckModel(deckDefinition, {
+      var deckModel = new DeckModel(deckDefinition, {
         parse: true,
         modelFactory: this.modelFactory
       });
@@ -38,10 +36,10 @@ function(_, Backbone, ModelFactory, ViewFactory, CompositeModel, HtmlView, Compo
         viewFactory: this.viewFactory
       }, viewOptions);
 
-      var deckView = new BaseDeckView(mergedViewOptions);
+      var deckView = new DeckView(mergedViewOptions);
       return deckView;
     }
   });
 
-  return BaseDeckFactory;
+  return DeckFactory;
 });

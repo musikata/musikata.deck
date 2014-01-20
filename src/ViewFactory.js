@@ -1,9 +1,7 @@
-define(
-  [
-    'underscore',
-    './BaseFactory'
-],
-function(_, BaseFactory){
+define(function(require){
+
+  var _ = require('underscore');
+  var BaseFactory = require('./BaseFactory');
 
   var ViewFactory = function(){
     BaseFactory.apply(this, arguments);

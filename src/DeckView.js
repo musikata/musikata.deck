@@ -1,16 +1,13 @@
-define(
-  [
-    'backbone',
-    'marionette',
-    'handlebars',
-    './ViewFactory',
-    'text!./templates/BaseDeckView.html',
-],
-function(Backbone, Marionette, HB, ViewFactory, BaseDeckViewTemplate){
+define(function(require){
 
-  var BaseDeckView = Marionette.Layout.extend({
+  var Marionette = require('marionette');
+  var Handlebars = require('handlebars');
+  var ViewFactory = require('./ViewFactory');
+  var DeckViewTemplate = require('text!./templates/DeckView.html');
 
-    template: HB.compile(BaseDeckViewTemplate),
+  var DeckView = Marionette.Layout.extend({
+
+    template: Handlebars.compile(DeckViewTemplate),
 
     regions: {
       slide: '[data-role="slideRegion"]'
@@ -78,7 +75,7 @@ function(Backbone, Marionette, HB, ViewFactory, BaseDeckViewTemplate){
           && this.model.get('slides').length
         && (this.model.get('currentSlideIndex') != undefined)) {
           this.showCurrentSlide();
-      }
+        }
 
     },
 
@@ -91,7 +88,7 @@ function(Backbone, Marionette, HB, ViewFactory, BaseDeckViewTemplate){
     showCurrentSlide: function(){
       var currentSlide = this.model.get('slides').at(
         this.model.get('currentSlideIndex'));
-      this.showSlide(currentSlide);
+        this.showSlide(currentSlide);
     },
 
     showSlide: function(slideModel){
@@ -150,5 +147,5 @@ function(Backbone, Marionette, HB, ViewFactory, BaseDeckViewTemplate){
 
   });
 
-  return BaseDeckView;
+  return DeckView;
 });
