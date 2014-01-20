@@ -1,18 +1,7 @@
-define(
-  [
-  'underscore',
-  './DeckViewCommon',
-  'deck/ExerciseDeckModel',
-  'deck/ExerciseDeckView',
-  'deck/ViewFactory',
-],
-function(
-  _, 
-  DeckViewCommon,
-  ExerciseDeckModel,
-  ExerciseDeckView, 
-  ViewFactory
-){
+define(function(require){
+  var ExerciseDeckViewCommon = require('./ExerciseDeckViewCommon');
+  var DeckViewCommon = require('./DeckViewCommon');
+  var ExerciseDeckView = require('deck/ExerciseDeckView');
 
   describe('ExerciseDeckView', function(){
 
@@ -20,70 +9,16 @@ function(
       expect(ExerciseDeckView).toBeDefined();
     });
 
-    // Define a test exercise.
-    var SillyExercise = Marionette.ItemView.extend({
-      template: Handlebars.compile(
-        '<button id="pass" value="pass"><button id="fail" value="fail">'
-      ),
-      events: {
-        'click button': 'onButtonClick'
-      },
-      onRender: function(){
-        this.trigger('ready');
-      },
-      onButtonClick: function(e){
-        var passFail = $(e.target).attr("id");
-        this.model.set('result', passFail);
-      }
-    });
-
-    /*
-     * Define generator functions.
-     */
-
-    var generateViewFactory = function(){
-      var viewFactory = new ViewFactory();
-      viewFactory.addHandler('silly', SillyExercise);
-      return viewFactory;
-    }
-
-    var generateTestModels = function(options){
-      var defaultOptions = {
-        numSlides: 4
-      };
-
-      var mergedOptions = _.extend({}, defaultOptions, options);
-
-      var testModels = {};
-
-      var slideModels = [];
-      for(var i=0; i < mergedOptions.numSlides; i++){
-        slideModels.push(new Backbone.Model({type: 'silly'}));
-      }
-      testModels.slides = new Backbone.Collection(slideModels);
-      testModels.deck = new ExerciseDeckModel({slides: testModels.slides});
-
-      return testModels;
-    };
-
-    var generateDeckView = function(){
-      var testModels = generateTestModels();
-      var deckView = new ExerciseDeckView({
-        model: testModels.deck,
-        viewFactory: generateViewFactory()
-      });
-      return deckView;
-    };
 
     // Run common deck view tests.
     DeckViewCommon.testDeckView({
       DeckView: ExerciseDeckView,
-      generateViewFactory: generateViewFactory,
-      generateTestModels: generateTestModels
+      generateViewFactory: ExerciseDeckViewCommon.generateViewFactory,
+      generateTestModels: ExerciseDeckViewCommon.generateTestModels
     });
 
     it('should display health', function(){
-      var view = generateDeckView();
+      var view = ExerciseDeckViewCommon.generateDeckView();
       view.render();
       expect(view.$el.find('.health').length).toEqual(1);
       expect(view.$el.find('.health_unit').length).toBeGreaterThan(0);
@@ -91,7 +26,7 @@ function(
     });
 
     it('should decrement health when slide result is fail', function(){
-      var view = generateDeckView();
+      var view = ExerciseDeckViewCommon.generateDeckView();
       view.render();
       var healthModel = view.model.get('health');
       view.slide.currentView.model.set('result', 'fail');
@@ -102,7 +37,7 @@ function(
     });
 
     it('should not decrement health when slide result is pass', function(){
-      var view = generateDeckView();
+      var view = ExerciseDeckViewCommon.generateDeckView();
       view.render();
       var healthModel = view.model.get('health');
       view.slide.currentView.model.set('result', 'pass');
@@ -113,7 +48,7 @@ function(
     });
 
     it('should fail deck when health is empty', function(){
-      var view = generateDeckView();
+      var view = ExerciseDeckViewCommon.generateDeckView();
       view.render();
 
       var failed = null;
@@ -130,7 +65,7 @@ function(
     });
 
     it('should pass deck if we get to the end and still have health', function(){
-      var view = generateDeckView();
+      var view = ExerciseDeckViewCommon.generateDeckView();
       view.render();
 
       var passed = null;
