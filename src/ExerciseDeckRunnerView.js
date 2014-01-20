@@ -11,7 +11,7 @@ define(function(require){
     template: Handlebars.compile(ExerciseDeckRunnerViewTemplate), 
 
     regions: {
-      deck: '.deck_container',
+      body: '.body_container',
       health: '.health_container'
     },
 
@@ -33,8 +33,27 @@ define(function(require){
       // Render health view.
       this.health.show(new HealthView({model: this.healthModel}));
 
+      // If getIntroView was provided, show intro view,
+      // and listen for when it finishes.
+      if (this.options.getIntroView){
+        var introView = this.options.getIntroView(this);
+        introView.on('complete', this.showDeck, this);
+        this.body.show(introView);
+      }
+      // Otherwise just show the deck.
+      else{
+        this.showDeck();
+      }
+
       // Listen for completion events.
       this.on('deck:completed', this.onDeckCompleted, this);
+    },
+
+    showDeck: function(){
+      this.body.show(new DeckView({
+        model: this.model.get('deck'),
+        viewFactory: this.options.viewFactory
+      }));
     },
 
     onChangeSlideResult: function(model){
@@ -78,6 +97,12 @@ define(function(require){
       }
       else{
         this.model.set('result', 'fail');
+      }
+
+      // Show outro view if given.
+      if (this.options.getOutroView){
+        var outroView = this.options.getOutroView(this);
+        this.body.show(outroView);
       }
     },
 

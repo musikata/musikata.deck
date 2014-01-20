@@ -14,8 +14,8 @@ define(function(require){
   // Define a dummy intro view.
   // @TODO: Should this extend from an IntroView base class? To make
   // the interface explicit?
-  var DummyIntroView = Marionette.ItemView.extend({
-    template: Handlebars.compile('<div>Da Intro</div>')
+  var SillyView = Marionette.ItemView.extend({
+    template: Handlebars.compile('<div>Beans!</div>')
   });
 
   // Define a test exercise.
@@ -71,12 +71,17 @@ define(function(require){
     return testModels;
   };
 
-  var generateRunnerView = function(){
-    var testModels = generateTestModels();
-    var runnerView = new ExerciseDeckRunnerView({
-      model: testModels.runner,
+  var generateRunnerView = function(overrides){
+
+    var opts = _.extend({
+      model: generateTestModels().runner,
+      getIntroView: null,
+      getCompletionView: null,
       viewFactory: generateViewFactory()
-    });
+    }, overrides);
+
+    var runnerView = new ExerciseDeckRunnerView(opts);
+
     return runnerView;
   };
 
@@ -93,95 +98,134 @@ define(function(require){
       view.remove();
     });
 
-    it('should decrement health when slide result is fail', function(){
-      var view = generateRunnerView();
-      view.render();
-      var healthModel = view.model.get('health');
-      var deckModel = view.model.get('deck');
-      deckModel.getCurrentSlideModel().set('result', 'fail');
-      var expectedHealth = healthModel.get('size') - 1;
-      var actualHealth = healthModel.get('currentHealth');
-      expect(expectedHealth).toEqual(actualHealth);
-      view.remove();
-    });
-
-    it('should not decrement health when slide result is pass', function(){
-      var view = generateRunnerView();
-      view.render();
-      var healthModel = view.model.get('health');
-      var deckModel = view.model.get('deck');
-      deckModel.getCurrentSlideModel().set('result', 'pass');
-      var expectedHealth = healthModel.get('size');
-      var actualHealth = healthModel.get('currentHealth');
-      expect(expectedHealth).toEqual(actualHealth);
-      view.remove();
-    });
-
-    it('should fail deck when health is empty', function(){
-      var view = generateRunnerView();
-      view.render();
-
-      var failed = null;
-
-      view.model.on('change:result', function(model){
-        failed = (model.get('result') == 'fail');
-      });
-
-      var healthModel = view.model.get('health');
-      healthModel.trigger('empty');
-
-      expect(failed).toBe(true);
-      view.remove();
-    });
-
-    it('should pass deck if we get to the end and still have health', function(){
-      var view = generateRunnerView();
-      view.render();
-
-      var passed = null;
-
-      view.model.on('change:result', function(model){
-        passed = (model.get('result') == 'pass');
-      });
-
-      view.trigger('deck:completed');
-
-      expect(passed).toBe(true);
-      view.remove();
-    });
-
     describe('before deck starts', function(){
       it('should show an intro view if one was provided', function(){
-        var deckRunner = new ExerciseDeckRunner({
+        var view = generateRunnerView({
           getIntroView: function(){
-            return new DummyIntroView({
+            return new SillyView({
               model: new Backbone.Model({id: 'intro'})
             });
-          },
-          getDeckView: function(){
-            deckView: generateRunnerView()
           }
         });
-        deckRunner.render();
-        expect(deckRunner.body.currentView.model.get('id')).toEqual('intro');
+        view.render();
+        expect(view.body.currentView.model.get('id')).toEqual('intro');
       });
 
       it('should show the first slide if no intro view was given', function(){
-        this.fail('NOT IMPLEMENTED');
+        var view = generateRunnerView();
+        view.render();
+        var deckModel = view.model.get('deck');
+        expect(view.body.currentView.model).toBe(deckModel);
       });
 
       it('should show the first slide when the intro view completes', function(){
-        this.fail('NOT IMPLEMENTED');
+        var introView = new SillyView({
+          model: new Backbone.Model({id: 'intro'})
+        });
+
+        var view = generateRunnerView({
+          getIntroView: function(){
+            return introView
+          }
+        });
+        view.render();
+
+        introView.trigger('complete');
+
+        var deckModel = view.model.get('deck');
+        var currentSlideView = view.body.currentView.slide.currentView;
+        expect(currentSlideView.model).toBe(deckModel.get('slides').at(0));
       });
     });
 
-    describe('after deck completes ', function(){
+
+    describe('while deck is running', function(){
+      it('should decrement health when slide result is fail', function(){
+        var view = generateRunnerView();
+        view.render();
+        var healthModel = view.model.get('health');
+        var deckModel = view.model.get('deck');
+        deckModel.getCurrentSlideModel().set('result', 'fail');
+        var expectedHealth = healthModel.get('size') - 1;
+        var actualHealth = healthModel.get('currentHealth');
+        expect(expectedHealth).toEqual(actualHealth);
+        view.remove();
+      });
+
+      it('should not decrement health when slide result is pass', function(){
+        var view = generateRunnerView();
+        view.render();
+        var healthModel = view.model.get('health');
+        var deckModel = view.model.get('deck');
+        deckModel.getCurrentSlideModel().set('result', 'pass');
+        var expectedHealth = healthModel.get('size');
+        var actualHealth = healthModel.get('currentHealth');
+        expect(expectedHealth).toEqual(actualHealth);
+        view.remove();
+      });
+
+      it('should fail deck when health is empty', function(){
+        var view = generateRunnerView();
+        view.render();
+
+        var failed = null;
+
+        view.model.on('change:result', function(model){
+          failed = (model.get('result') == 'fail');
+        });
+
+        var healthModel = view.model.get('health');
+        healthModel.trigger('empty');
+
+        expect(failed).toBe(true);
+        view.remove();
+      });
+
+    });
+
+    describe('after deck completes', function(){
+
+      it('should pass deck if we get to the end and still have health', function(){
+        var view = generateRunnerView();
+        view.render();
+
+        var passed = null;
+
+        view.model.on('change:result', function(model){
+          passed = (model.get('result') == 'pass');
+        });
+
+        view.trigger('deck:completed');
+
+        expect(passed).toBe(true);
+        view.remove();
+      });
+
       it('should show an outro view if one was given', function(){
-        this.fail('NOT IMPLEMENTED');
+        var outroView = new SillyView({
+          model: new Backbone.Model({id: 'outro'})
+        });
+        var view = generateRunnerView({
+          getOutroView: function(){
+            return outroView;
+          }
+        });
+        view.render();
+
+        view.trigger('deck:completed');
+
+        expect(view.body.currentView.model.get('id')).toEqual('outro');
+        view.remove();
       });
 
       it('should do nothing if no outro view was given', function(){
-        this.fail('NOT IMPLEMENTED');
+        var view = generateRunnerView();
+        view.render();
+        view.trigger('deck:completed');
+
+        var deckModel = view.model.get('deck');
+        expect(view.body.currentView.model).toBe(deckModel);
+        view.remove();
       });
 
     });
