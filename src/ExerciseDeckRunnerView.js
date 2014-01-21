@@ -21,13 +21,17 @@ define(function(require){
       progressBar: '.progress-bar'
     },
 
+    initialize: function(options){
+      this.primaryDeckModel = options.model.get(options.model.primaryDeckAttr);
+    },
+
     onRender: function(){
       // Listen for health events.
       this.healthModel = this.model.get('health');
       this.healthModel.on('empty', this.onHealthEmpty, this);
 
       // Listen for slide result changes.
-      this.slidesCollection = this.model.get('deck').get('slides');
+      this.slidesCollection = this.primaryDeckModel.get('slides');
       this.slidesCollection.on('change:result', this.onChangeSlideResult, this);
 
       // Render health view.
@@ -51,7 +55,7 @@ define(function(require){
 
     showDeck: function(){
       this.body.show(new DeckView({
-        model: this.model.get('deck'),
+        model: this.primaryDeckModel,
         viewFactory: this.options.viewFactory
       }));
     },

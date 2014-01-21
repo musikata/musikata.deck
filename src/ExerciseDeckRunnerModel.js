@@ -5,6 +5,8 @@ define(function(require){
 
   var ExerciseDeckRunnerModel = Backbone.Model.extend({
 
+    primaryDeckAttr: 'deck',
+
     defaults: {
       result: null,
       deck: null
@@ -18,9 +20,9 @@ define(function(require){
         this.set('health', new HealthModel(health));
       }
 
-      var deck = this.get('deck');
-      if (! (deck instanceof DeckModel)){
-        this.set('deck', new DeckModel(deck, {parse: true}));
+      var primaryDeck = this.get(this.primaryDeckAttr);
+      if (! (primaryDeck instanceof DeckModel)){
+        this.set(this.primaryDeckAttr, new DeckModel(primaryDeck, {parse: true}));
       }
     }
   });

@@ -1,5 +1,107 @@
 define(function(require){
+
+  var _ = require('underscore');
+  var Backbone = require('backbone');
+  var Marionette = require('marionette');
+  var Handlebars = require('handlebars');
+
+  var ViewFactory = require('deck/ViewFactory');
+  var DeckModel = require('deck/DeckModel');
+  var DeckView = require('deck/DeckView');
+  var HtmlView = require('deck/HtmlView');
+  var MusikataExerciseRunnerModel = require('deck/MusikataExerciseRunnerModel');
   var MusikataExerciseRunnerView = require('deck/MusikataExerciseRunnerView');
+
+  // Define a test exercise.
+  var SillyExercise = Marionette.ItemView.extend({
+    template: Handlebars.compile(
+      '<button id="pass" value="pass"><button id="fail" value="fail">'
+    ),
+    events: {
+      'click button': 'onButtonClick'
+    },
+    onRender: function(){
+      this.trigger('ready');
+    },
+    onButtonClick: function(e){
+      var passFail = $(e.target).attr("id");
+      this.model.set('result', passFail);
+    }
+  });
+
+  /*
+   * Define generator functions.
+   */
+
+  var generateViewFactory = function(){
+    var viewFactory = new ViewFactory();
+    viewFactory.addHandler('silly', SillyExercise);
+    viewFactory.addHandler('html', HtmlView);
+    return viewFactory;
+  };
+
+  var generateDeckModel = function(overrides){
+    var opts = _.extend({
+      numSlides: 3,
+      generateSlideModel: function(idx){
+        return new Backbone.Model({
+          id: idx,
+          type: 'html',
+          html: '<span>slide #' + idx + '</span>'
+        });
+      }
+    }, overrides);
+
+    var slideModels = [];
+    for(var i=0; i < opts.numSlides; i++){
+      slideModels.push(opts.generateSlideModel(i));
+    }
+    var slidesCollection = new Backbone.Collection(slideModels);
+    var deckModel = new DeckModel({
+      slides: slidesCollection
+    }, {parse: true});
+
+    return deckModel;
+  };
+
+  var generateTestModels = function(options){
+    var defaultOptions = {
+      numSlides: 4
+    };
+
+    var mergedOptions = _.extend({}, defaultOptions, options);
+
+    var testModels = {};
+
+    testModels.introDeck = generateDeckModel();
+
+    testModels.exerciseDeck = generateDeckModel({
+      generateSlideModel: function(idx){
+        return new Backbone.Model({id: idx, type: 'silly'});
+      }
+    });
+
+    testModels.runnerModel = new MusikataExerciseRunnerModel({
+      introDeck: testModels.introDeck,
+      exerciseDeck: testModels.exerciseDeck
+    });
+
+    return testModels;
+  };
+
+  var generateRunnerView = function(overrides){
+
+    var opts = _.extend({
+      model: generateTestModels().runnerModel,
+      getOutroView: null,
+      viewFactory: generateViewFactory()
+    }, overrides);
+
+    var runnerView = new MusikataExerciseRunnerView(opts);
+
+    return runnerView;
+  };
+
 
   describe('MusikataExerciseRunnerView', function(){
     it('should be defined', function(){
@@ -9,7 +111,11 @@ define(function(require){
     describe('intro slides', function(){
 
       it('should show intro slides if provided', function(){
-        this.fail('NOT IMPLEMENTED');
+        var runnerView =  generateRunnerView();
+        runnerView.render();
+        var bodyView = runnerView.body.currentView;
+        var introSlides = runnerView.model.get('introDeck').get('slides');
+        expect(bodyView.model.get('slides')).toBe(introSlides);
       });
 
       it('should advance through intro slides w/out changing progress bar', function(){
