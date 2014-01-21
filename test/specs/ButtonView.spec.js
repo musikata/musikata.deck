@@ -11,6 +11,7 @@ define(function(require){
     opts.id = _.isUndefined(opts.id) ? "b_" + new Date().getTime() : opts.id;
     return new Backbone.Model({
       id: opts.id,
+      eventId: _.isUndefined(opts.eventId) ? opts.id : opts.eventId,
       label: _.isUndefined(opts.label) ? opts.id : opts.label,
       disabled: _.isUndefined(opts.disabled) ? false : opts.disabled,
     });

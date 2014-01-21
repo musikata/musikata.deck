@@ -7,6 +7,10 @@ define(function(require){
 
     template: Handlebars.compile('<span class="label"></span>'),
 
+    events: {
+      "click": "_onClick"
+    },
+
     modelEvents: {
       "change:label": "updateLabel",
       "change:disabled": "updateDisabled",
@@ -20,6 +24,10 @@ define(function(require){
       this.$el.data('id', this.model.get('id'));
       this.updateLabel();
       this.updateDisabled();
+    },
+
+    _onClick: function(){
+      this.trigger('clicked', this.model.get('eventId'));
     },
 
     updateLabel: function(){
