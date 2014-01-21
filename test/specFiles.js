@@ -17,6 +17,7 @@ var specFiles = [
   'ExerciseDeckRunnerView.spec.js',
   'MusikataExerciseRunnerModel.spec.js',
   'MusikataExerciseRunnerView.spec.js',
+  'ButtonView.spec.js',
   'NavigationView.spec.js',
 ];
 
