@@ -1,3 +1,9 @@
+/*
+ * The Runner is a container and mediator between several sub-views.
+ * It coordinates interactions between decks, navigation, and health-views.
+ * This allows us to keep the sub-views simple, and to make their relationships
+ * explicit.
+ */
 define(function(require){
 
   var _ = require('underscore');
