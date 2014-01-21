@@ -116,10 +116,22 @@ define(function(require){
         var bodyView = runnerView.body.currentView;
         var introSlides = runnerView.model.get('introDeck').get('slides');
         expect(bodyView.model.get('slides')).toBe(introSlides);
+        this.after(function(){runnerView.remove()});
+      });
+
+      it('should show navigation for intro slides', function(){
+        var runnerView =  generateRunnerView();
+        runnerView.render();
+        expect(nextButtonToBeThere);
+        this.fail('NOT IMPLEMENTED');
+        this.after(function(){runnerView.remove()});
       });
 
       it('should advance through intro slides w/out changing progress bar', function(){
+        var runnerView =  generateRunnerView();
+        runnerView.render();
         this.fail('NOT IMPLEMENTED');
+        this.after(function(){runnerView.remove()});
       });
 
       it('should start show exercise slides when intro slides are done', function(){

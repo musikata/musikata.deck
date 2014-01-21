@@ -17,6 +17,7 @@ var specFiles = [
   'ExerciseDeckRunnerView.spec.js',
   'MusikataExerciseRunnerModel.spec.js',
   'MusikataExerciseRunnerView.spec.js',
+  'NavigationView.spec.js',
 ];
 
 // Prefix specs with specsDir.
