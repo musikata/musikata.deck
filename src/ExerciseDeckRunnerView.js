@@ -52,8 +52,11 @@ define(function(require){
       this.progressModel = this.model.get('progress');
       this.progress.show(new ProgressView({model: this.progressModel}));
 
-      // Render nav view.
+      // Render & wire nav view.
       this.nav.show(new NavigationView({collection: new Backbone.Collection()}));
+      this.nav.currentView.on('button:clicked', function(buttonView, eventId){
+        this.body.currentView.trigger(eventId);
+      }, this);
 
       // If getIntroView was provided, show intro view,
       // and listen for when it finishes.

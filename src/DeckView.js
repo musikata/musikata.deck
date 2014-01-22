@@ -15,9 +15,12 @@ define(function(require){
 
     initialize: function(){
       this.model.on('change:currentSlideIndex', this.showCurrentSlide, this);
-      this.on('advanceSlide', this.advanceSlide, this);
       this.on('goToNextSlide', this.goToNextSlide, this);
       this.on('goToPreviousSlide', this.goToPreviousSlide, this);
+
+      // For nav events. Not sure yet if we want to couple to event IDs here, or in RunnerView.
+      // If we couple here by convention, it does make code a bit cleaner methinks.
+      this.on('continue', this.goToNextSlide, this);
     },
 
     goToNextSlide: function(){

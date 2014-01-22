@@ -5,21 +5,14 @@ define(function(require){
   var ProgressModel = Backbone.Model.extend({
     defaults: {
       size: 3,
+      currentProgress: 0
     },
 
-    initialize: function(){
-
-      // Set default current progress to size if not set.
-      if (_.isUndefined(this.get('currentProgress'))){
-        this.set('currentProgress', this.get('size'));
-      }
-    },
-
-    decrementCurrentProgress: function(x){
+    incrementCurrentProgress: function(x){
       if (_.isUndefined(x)){
         x = 1;
       }
-      this.set('currentProgress', this.get('currentProgress') - x);
+      this.set('currentProgress', this.get('currentProgress') + x);
     }
   });
 

@@ -73,8 +73,8 @@ define(function(require){
       it('should trigger events when buttons are clicked', function(){
         var triggeredEvents = [];
 
-        navView.on('button:clicked', function(childView, id){
-          triggeredEvents.push(id);
+        navView.on('button:clicked', function(childView, eventId){
+          triggeredEvents.push(eventId);
         });
         navView.children.each(function(buttonView){
           buttonView.$el.trigger('click');

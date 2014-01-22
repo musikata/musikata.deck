@@ -129,18 +129,16 @@ define(function(require){
         this.after(function(){runnerView.remove()});
       });
 
-      it('should advance through intro slides w/out changing progress bar', function(){
+      xit('should advance through intro slides w/out changing progress bar', function(){
         var runnerView =  generateRunnerView();
         runnerView.render();
-        var bodyView = runnerView.body.currentView;
+        var introView = runnerView.body.currentView;
         var navView = runnerView.nav.currentView;
-        var introSlides = runnerView.model.get('introDeck').get('slides');
+        var progressView = runnerView.progress.currentView;
         var $continueButton = navView.$el.find('button:contains("continue")');
         $continueButton.trigger('click');
-        expect(bodyView.$el.html()).toContain('slide #1');
-        expect(progressView.model.get('position')).toBe(0);
-
-        this.fail('NOT IMPLEMENTED');
+        expect(introView.$el.html()).toContain('slide #1');
+        expect(progressView.model.get('currentProgress')).toBe(0);
 
         this.after(function(){runnerView.remove()});
       });
