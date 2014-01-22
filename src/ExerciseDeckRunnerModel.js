@@ -1,6 +1,7 @@
 define(function(require){
   var Backbone = require('backbone');
   var HealthModel = require('./HealthModel');
+  var ProgressModel = require('./ProgressModel');
   var DeckModel = require('./DeckModel');
 
   var ExerciseDeckRunnerModel = Backbone.Model.extend({
@@ -8,6 +9,8 @@ define(function(require){
     primaryDeckAttr: 'deck',
 
     defaults: {
+      health: null,
+      progress: null,
       result: null,
       deck: null
     },
@@ -18,6 +21,11 @@ define(function(require){
       var health = this.get('health');
       if (! (health instanceof HealthModel)){
         this.set('health', new HealthModel(health));
+      }
+
+      var progress = this.get('progress');
+      if (! (progress instanceof ProgressModel)){
+        this.set('progress', new ProgressModel(progress));
       }
 
       var primaryDeck = this.get(this.primaryDeckAttr);

@@ -164,6 +164,26 @@ define(function(require){
         view.remove();
       });
 
+      it('should increment progress when slide changes', function(){
+        var view = generateRunnerView();
+        view.render();
+        var progressModel = view.model.get('progress');
+        var deckView = view.body.currentView;
+
+        var advanceAndCheckProgress = function(){
+          deckView.goToNextSlide();
+          var expectedProgress = deckView.model.get('currentSlideIndex');
+          var actualProgress = progressModel.get('currentProgress');
+          expect(expectedProgress).toEqual(actualProgress);
+        }
+
+        for (var i=0; i < 2; i++){
+          advanceAndCheckProgress();
+        }
+
+        view.remove();
+      });
+
       it('should fail deck when health is empty', function(){
         var view = generateRunnerView();
         view.render();

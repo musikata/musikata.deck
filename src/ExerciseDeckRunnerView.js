@@ -7,10 +7,13 @@
 define(function(require){
 
   var _ = require('underscore');
+  var Backbone = require('backbone');
   var Handlebars = require('handlebars');
   var Marionette = require('marionette');
   var DeckView = require('./DeckView');
   var HealthView = require('./HealthView');
+  var ProgressView = require('./ProgressView');
+  var NavigationView = require('./NavigationView');
   var ExerciseDeckRunnerViewTemplate = require('text!./templates/ExerciseDeckRunnerView.html');
 
   var ExerciseDeckRunnerView = Marionette.Layout.extend({
@@ -18,7 +21,9 @@ define(function(require){
 
     regions: {
       body: '.body_container',
-      health: '.health_container'
+      health: '.health_container',
+      nav: '.nav_container',
+      progress: '.progress_container'
     },
 
     ui: {
@@ -43,10 +48,17 @@ define(function(require){
       // Render health view.
       this.health.show(new HealthView({model: this.healthModel}));
 
+      // Render progress view.
+      this.progressModel = this.model.get('progress');
+      this.progress.show(new ProgressView({model: this.progressModel}));
+
+      // Render nav view.
+      this.nav.show(new NavigationView({collection: new Backbone.Collection()}));
+
       // If getIntroView was provided, show intro view,
       // and listen for when it finishes.
       if (this.options.getIntroView){
-        var introView = this.options.getIntroView(this);
+        var introView = this.options.getIntroView.apply(this, []);
         introView.on('complete', this.showDeck, this);
         this.body.show(introView);
       }
@@ -64,6 +76,11 @@ define(function(require){
         model: this.primaryDeckModel,
         viewFactory: this.options.viewFactory
       }));
+
+      // Update progress when slide changes.
+      this.primaryDeckModel.on('change:currentSlideIndex', function(model, slideIdx){
+        this.progressModel.set('currentProgress', slideIdx);
+      }, this);
     },
 
     onChangeSlideResult: function(model){
@@ -76,25 +93,6 @@ define(function(require){
       }
 
       this.enableNextButton();
-    },
-
-    onChangeSlide: function(){
-      // Update progress bar.
-      // NOTE: might want to put progress bar in it's own view
-      // later.
-      this.updateProgressBar();
-    },
-
-    updateProgressBar: function(){
-      var curIdx = this.model.get('currentSlideIndex');
-      this.ui.progressBar.find('li').each(function(idx, el){
-        if (idx < curIdx){
-          $(el).addClass('done');
-        }
-        else{
-          $(el).removeClass('done');
-        }
-      });
     },
 
     onHealthEmpty: function(){

@@ -9,6 +9,11 @@ define(function(require){
       if (! this.options.getIntroView){
         var _this = this;
         this.options.getIntroView = function(){
+
+          this.nav.currentView.collection.reset([
+            new Backbone.Model({label: 'continue', eventId: 'continue'})
+          ]);
+
           return new DeckView({
             model: _this.model.get('introDeck'),
             viewFactory: options.viewFactory

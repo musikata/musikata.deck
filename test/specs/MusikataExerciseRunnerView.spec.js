@@ -119,18 +119,29 @@ define(function(require){
         this.after(function(){runnerView.remove()});
       });
 
-      it('should show navigation for intro slides', function(){
+      it('should show correct navigation for intro slides', function(){
         var runnerView =  generateRunnerView();
         runnerView.render();
-        expect(nextButtonToBeThere);
-        this.fail('NOT IMPLEMENTED');
+        var navView = runnerView.nav.currentView;
+        var $continueButton = navView.$el.find('button:contains("continue")');
+        expect($continueButton.length).toBe(1);
+        expect($continueButton.attr('disabled')).toBeUndefined();
         this.after(function(){runnerView.remove()});
       });
 
       it('should advance through intro slides w/out changing progress bar', function(){
         var runnerView =  generateRunnerView();
         runnerView.render();
+        var bodyView = runnerView.body.currentView;
+        var navView = runnerView.nav.currentView;
+        var introSlides = runnerView.model.get('introDeck').get('slides');
+        var $continueButton = navView.$el.find('button:contains("continue")');
+        $continueButton.trigger('click');
+        expect(bodyView.$el.html()).toContain('slide #1');
+        expect(progressView.model.get('position')).toBe(0);
+
         this.fail('NOT IMPLEMENTED');
+
         this.after(function(){runnerView.remove()});
       });
 

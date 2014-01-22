@@ -13,6 +13,8 @@ var specFiles = [
   'ViewFactory.spec.js',
   'HealthModel.spec.js',
   'HealthView.spec.js',
+  'ProgressModel.spec.js',
+  'ProgressView.spec.js',
   'ExerciseDeckRunnerModel.spec.js',
   'ExerciseDeckRunnerView.spec.js',
   'MusikataExerciseRunnerModel.spec.js',
