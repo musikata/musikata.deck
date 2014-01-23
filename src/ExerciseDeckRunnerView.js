@@ -41,10 +41,6 @@ define(function(require){
       this.healthModel = this.model.get('health');
       this.healthModel.on('empty', this.onHealthEmpty, this);
 
-      // Listen for slide result changes.
-      this.slidesCollection = this.primaryDeckModel.get('slides');
-      this.slidesCollection.on('change:result', this.onChangeSlideResult, this);
-
       // Render health view.
       this.health.show(new HealthView({model: this.healthModel}));
 
@@ -52,38 +48,53 @@ define(function(require){
       this.progressModel = this.model.get('progress');
       this.progress.show(new ProgressView({model: this.progressModel}));
 
-      // Render & wire nav view.
+      // Render nav view and collect nav events.
       this.nav.show(new NavigationView({collection: new Backbone.Collection()}));
-      this.nav.currentView.on('button:clicked', function(buttonView, eventId){
-        this.body.currentView.trigger(eventId);
-      }, this);
+      this.navView = this.nav.currentView;
 
       // If getIntroView was provided, show intro view,
       // and listen for when it finishes.
       if (this.options.getIntroView){
         var introView = this.options.getIntroView.apply(this, []);
-        introView.on('complete', this.showDeck, this);
+        introView.on('complete', this.showPrimaryDeck, this);
         this.body.show(introView);
       }
       // Otherwise just show the deck.
       else{
-        this.showDeck();
+        this.showPrimaryDeck();
       }
 
       // Listen for completion events.
       this.on('deck:completed', this.onDeckCompleted, this);
     },
 
-    showDeck: function(){
-      this.body.show(new DeckView({
+    showPrimaryDeck: function(){
+
+      var primaryDeckView = new DeckView({
         model: this.primaryDeckModel,
         viewFactory: this.options.viewFactory
-      }));
+      });
+
+      var slidesCollection = this.primaryDeckModel.get('slides');
 
       // Update progress when slide changes.
       this.primaryDeckModel.on('change:currentSlideIndex', function(model, slideIdx){
         this.progressModel.set('currentProgress', slideIdx);
       }, this);
+
+      // Update nav when slides show
+      primaryDeckView.on('slide:show', function(slideView){
+        this.updateNavForSlide(slideView);
+      }, this);
+
+      // Listen for slide result changes.
+      slidesCollection.on('change:result', this.onChangeSlideResult, this);
+
+      this.body.show(primaryDeckView);
+
+    },
+
+    updateNavForSlide: function(slideView){
     },
 
     onChangeSlideResult: function(model){
@@ -94,8 +105,6 @@ define(function(require){
       else if (result == 'fail'){
         this.healthModel.decrementCurrentHealth();
       }
-
-      this.enableNextButton();
     },
 
     onHealthEmpty: function(){
@@ -115,44 +124,8 @@ define(function(require){
         var outroView = this.options.getOutroView(this);
         this.body.show(outroView);
       }
-    },
+    }
 
-    // NOTE: later on might want to factor out nav buttons into their own view.
-    enableNextButton: function(){
-      this.ui.nextButton.addClass('enabled');
-      this.ui.nextButton.on('click', _.bind(this.onClickNextButton, this));
-    },
-
-    disableNextButton: function(){
-      this.ui.nextButton.removeClass('enabled');
-      this.ui.nextButton.off('click');
-    },
-
-    onClickNextButton: function(){
-      if (this.model.get('currentSlideIndex') == this.model.get('slides').length - 1){
-        this.trigger('deck:completed');
-      }
-      else{
-        this.goToNextSlide();
-      }
-    },
-
-    enablePreviousButton: function(){
-      if (this.ui.previousButton.hasClass('enabled')){
-        return;
-      }
-      this.ui.previousButton.addClass('enabled');
-      this.ui.previousButton.on('click', _.bind(this.onClickPreviousButton, this));
-    },
-
-    disablePreviousButton: function(){
-      this.ui.previousButton.removeClass('enabled');
-      this.ui.previousButton.off('click');
-    },
-
-    onClickPreviousButton: function(){
-      this.goToPreviousSlide();
-    },
   });
 
   return ExerciseDeckRunnerView;

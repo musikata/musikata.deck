@@ -13,8 +13,11 @@ define(function(require){
       slide: '[data-role="slideRegion"]'
     },
 
+    modelEvents: {
+      'change:currentSlideIndex': 'showCurrentSlide'
+    },
+
     initialize: function(){
-      this.model.on('change:currentSlideIndex', this.showCurrentSlide, this);
       this.on('goToNextSlide', this.goToNextSlide, this);
       this.on('goToPreviousSlide', this.goToPreviousSlide, this);
 
@@ -57,12 +60,12 @@ define(function(require){
 
     },
 
-    onSlideShow: function(){
-      this.trigger('slide:show');
+    onSlideShow: function(view){
+      this.trigger('slide:show', view);
     },
 
-    onSlideClose: function(){
-      this.trigger('slide:close');
+    onSlideClose: function(view){
+      this.trigger('slide:close', view);
     },
 
     showCurrentSlide: function(){

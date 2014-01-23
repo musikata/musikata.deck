@@ -108,6 +108,11 @@ define(function(require){
       expect(MusikataExerciseRunnerView).toBeDefined();
     });
 
+    var getNavButton = function(runnerView, buttonText){
+      var navView = runnerView.nav.currentView;
+      return navView.$el.find('button:contains("' + buttonText + '")');
+    };
+
     describe('intro slides', function(){
 
       it('should show intro slides if provided', function(){
@@ -122,20 +127,18 @@ define(function(require){
       it('should show correct navigation for intro slides', function(){
         var runnerView =  generateRunnerView();
         runnerView.render();
-        var navView = runnerView.nav.currentView;
-        var $continueButton = navView.$el.find('button:contains("continue")');
+        var $continueButton = getNavButton(runnerView, 'continue');
         expect($continueButton.length).toBe(1);
         expect($continueButton.attr('disabled')).toBeUndefined();
         this.after(function(){runnerView.remove()});
       });
 
-      xit('should advance through intro slides w/out changing progress bar', function(){
+      it('should advance through intro slides w/out changing progress bar', function(){
         var runnerView =  generateRunnerView();
         runnerView.render();
         var introView = runnerView.body.currentView;
-        var navView = runnerView.nav.currentView;
         var progressView = runnerView.progress.currentView;
-        var $continueButton = navView.$el.find('button:contains("continue")');
+        var $continueButton = getNavButton(runnerView, 'continue');
         $continueButton.trigger('click');
         expect(introView.$el.html()).toContain('slide #1');
         expect(progressView.model.get('currentProgress')).toBe(0);
@@ -143,23 +146,94 @@ define(function(require){
         this.after(function(){runnerView.remove()});
       });
 
-      it('should start show exercise slides when intro slides are done', function(){
-        this.fail('NOT IMPLEMENTED');
+      it('should change nav to "start" on last intro slide', function(){
+        var runnerView =  generateRunnerView();
+        runnerView.render();
+        var $continueButton = getNavButton(runnerView, 'continue');
+        var introSlides = runnerView.model.get('introDeck').get('slides');
+        for (var i=0; i < introSlides.length - 1; i++){
+          $continueButton.trigger('click');
+        }
+        var $startButton = getNavButton(runnerView, 'start');
+        expect($startButton.length).toBe(1);
+        this.after(function(){runnerView.remove()});
       });
 
-      it('should start showing exercise slides if there were no intro slides', function(){
-        this.fail('NOT IMPLEMENTED');
+      it('nav should be "start" if only one intro slide', function(){
+        var runnerView =  generateRunnerView();
+        var introSlides = runnerView.model.get('introDeck').get('slides');
+        while( introSlides.length > 1){
+          introSlides.pop();
+        }
+        runnerView.render();
+        var $startButton = getNavButton(runnerView, 'start');
+        expect($startButton.length).toBe(1);
+        this.after(function(){runnerView.remove()});
       });
 
     });
 
     describe('exercise slides', function(){
-      it('should change navigation buttons when going through exercise slides', function(){
-        this.fail('NOT IMPLEMENTED');
+
+      var clickThroughIntroSlides = function(runnerView){
+        var introSlides = runnerView.model.get('introDeck').get('slides');
+        var $continueButton = getNavButton(runnerView, 'continue');
+        for (var i=0; i < introSlides.length - 1; i++){
+          $continueButton.trigger('click');
+        }
+        var $startButton = getNavButton(runnerView, 'start');
+        $startButton.trigger('click');
+      };
+
+      it('should start showing exercise slides when intro slides are done', function(){
+        var runnerView =  generateRunnerView();
+        runnerView.render();
+        clickThroughIntroSlides(runnerView);
+        var bodyView = runnerView.body.currentView;
+        expect(bodyView.model.cid).toBe(runnerView.model.get('exerciseDeck').cid);
+        this.after(function(){runnerView.remove()});
+      });
+
+      it('should start showing exercise slides if there were no intro slides', function(){
+        var runnerView =  generateRunnerView();
+        var introSlides = runnerView.model.get('introDeck').get('slides');
+        introSlides.reset();
+        runnerView.render();
+        var bodyView = runnerView.body.currentView;
+        expect(bodyView.model.cid).toBe(runnerView.model.get('exerciseDeck').cid);
+        this.after(function(){runnerView.remove()});
+      });
+
+      it('should update navigation for each exercise slides', function(){
+        var runnerView =  generateRunnerView();
+        spyOn(runnerView, 'updateNavForSlide');
+        var introSlides = runnerView.model.get('introDeck').get('slides');
+        runnerView.render();
+        clickThroughIntroSlides(runnerView);
+        var primaryDeckView = runnerView.body.currentView;
+        var numExerciseSlides = primaryDeckView.model.get('slides').length;
+        for (var i=0; i < numExerciseSlides - 1; i++){
+          primaryDeckView.goToNextSlide();
+        }
+        expect(runnerView.updateNavForSlide.callCount).toBe(numExerciseSlides);
+
+        this.after(function(){runnerView.remove()});
       });
 
       it('should change progress bar when going through exercise slides', function(){
-        this.fail('NOT IMPLEMENTED');
+        var runnerView =  generateRunnerView();
+        spyOn(runnerView, 'updateNavForSlide');
+        var introSlides = runnerView.model.get('introDeck').get('slides');
+        runnerView.render();
+        clickThroughIntroSlides(runnerView);
+        var primaryDeckView = runnerView.body.currentView;
+        var progressModel = runnerView.progress.currentView.model;
+        var numExerciseSlides = primaryDeckView.model.get('slides').length;
+        for (var i=0; i < numExerciseSlides - 1; i++){
+          primaryDeckView.goToNextSlide();
+          expect(progressModel.get('currentProgress')).toBe(i + 1);
+        }
+        this.after(function(){runnerView.remove()});
       });
     });
 

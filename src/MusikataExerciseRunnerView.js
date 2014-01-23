@@ -3,26 +3,58 @@ define(function(require){
   var DeckView = require('./DeckView');
 
   var MusikataExerciseRunner = ExerciseDeckRunnerView.extend({
-    initialize: function(options){
 
-      // Create deck view  for intro view by default.
-      if (! this.options.getIntroView){
-        var _this = this;
+    onRender: function(){
+
+      // Create deck view for intro view if introSlides were given
+      var introSlides = this.model.get('introDeck').get('slides');
+      if (! this.options.getIntroView && introSlides && (introSlides.length > 0)){
+
         this.options.getIntroView = function(){
-
-          this.nav.currentView.collection.reset([
+          var navCollection = this.navView.collection;
+          navCollection.reset([
             new Backbone.Model({label: 'continue', eventId: 'continue'})
           ]);
 
-          return new DeckView({
-            model: _this.model.get('introDeck'),
-            viewFactory: options.viewFactory
+          var introView = new DeckView({
+            model: this.model.get('introDeck'),
+            viewFactory: this.options.viewFactory
           });
+
+          // Route nav events to introView.
+          introView.listenTo(this.navView, 'button:clicked', function(buttonView, eventId){
+            introView.trigger(eventId);
+          });
+
+          // Update nav on final intro slide.
+          this.listenTo(introView, 'slide:show', function(view){
+            if (introView.model.get('currentSlideIndex') == (introSlides.length - 1)){
+
+              navCollection.reset([
+                new Backbone.Model({label: 'start', eventId: 'startPrimaryDeck'})
+              ]);
+
+              // Complete intro deck when start is clicked.
+              introView.on('startPrimaryDeck', function(){
+                introView.trigger('complete');
+              });
+
+            }
+          }, this);
+
+          return introView;
+
         }
       }
 
-      ExerciseDeckRunnerView.prototype.initialize.apply(this, [options]);
-    }
+      ExerciseDeckRunnerView.prototype.onRender.apply(this);
+
+    },
+
+    updateNavForSlide: function(slideView){
+      ExerciseDeckRunnerView.prototype.updateNavForSlide.apply(this, [slideView]);
+    },
+
   });
 
   return MusikataExerciseRunner;
