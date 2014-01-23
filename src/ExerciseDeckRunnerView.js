@@ -34,6 +34,9 @@ define(function(require){
 
     initialize: function(options){
       this.primaryDeckModel = options.model.get(options.model.primaryDeckAttr);
+
+      // Listen for deck completion
+      this.on('primaryDeck:completed', this.onPrimaryDeckCompleted, this);
     },
 
     onRender: function(){
@@ -185,7 +188,6 @@ define(function(require){
     },
 
     onPrimaryDeckCompleted: function(){
-      this.trigger('primaryDeck:completed');
       if (this.healthModel.get('currentHealth') > 0){
         this.model.set('result', 'pass');
       }

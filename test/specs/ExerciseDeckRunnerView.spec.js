@@ -208,17 +208,9 @@ define(function(require){
       it('should pass deck if we get to the end and still have health', function(){
         var view = generateRunnerView();
         view.render();
-
-        var passed = null;
-
-        view.model.on('change:result', function(model){
-          passed = (model.get('result') == 'pass');
-        });
-
-        view.trigger('deck:completed');
-
-        expect(passed).toBe(true);
-        view.remove();
+        view.trigger('primaryDeck:completed');
+        expect(view.model.get('result')).toBe('pass');
+        this.after(function(){view.remove();});
       });
 
       it('should show an outro view if one was given', function(){
@@ -232,7 +224,7 @@ define(function(require){
         });
         view.render();
 
-        view.trigger('deck:completed');
+        view.trigger('primaryDeck:completed');
 
         expect(view.body.currentView.model.get('id')).toEqual('outro');
         view.remove();
