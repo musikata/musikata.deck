@@ -96,6 +96,44 @@ define(function(require){
     },
 
     updateNavForSlide: function(slideView){
+      // @TODO: Refactor this later. This is the first attempt,
+      // prolly gonna be wicked kludgy at first. But let's get it out there.
+      var slideModel = slideView.model;
+      var submissionType = slideModel.get('submissionType');
+      var navCollection = this.nav.currentView.collection;
+
+      // Manual submissions: check -> checking -> continue.
+      if (submissionType == 'manual'){
+
+        // Initial state: disabled check button.
+        var buttonModel = new Backbone.Model({label: 'check', eventId: 'check', disabled: true})
+        navCollection.reset([buttonModel]);
+
+        // If submission is empty, disable check button.
+        // otherwise, enable check button.
+        slideModel.on('change:submission', function(model, submission){
+          buttonModel.set('disabled', _.isUndefined(submission));
+        });
+
+        slideModel.on('change:submissionStatus', function(model, submissionStatus){
+          // If submitting, change to checking.
+          if (submissionStatus == 'submitting'){
+            buttonModel.set({
+              label: 'checking',
+              disabled: true
+            });
+          }
+          // If submission complete, change to 'continue'.
+          else if (submissionStatus == 'completed'){
+            buttonModel.set({
+              label: 'continue',
+              eventId: 'continue',
+              disabled: false
+            });
+          }
+        });
+
+      }
     },
 
     onChangeSlideResult: function(model){

@@ -249,6 +249,142 @@ define(function(require){
       });
 
     });
+    
+    describe('update navigation for slide ', function(){
+
+      var getNavView = function(runnerView){
+        return runnerView.nav.currentView;
+      };
+
+      var getNavButtons = function(runnerView){
+        var navView = getNavView(runnerView);
+        return navView.$el.find('button');
+      };
+
+      var getCurrentSlideView = function(runnerView){
+        return runnerView.body.currentView.slide.currentView;
+      };
+
+      describe('submissionType: manual', function(){
+
+        var runnerView;
+        var currentSlideView;
+        beforeEach(function(){
+          runnerView = generateRunnerView();
+          var slides = runnerView.model.get('deck').get('slides');
+          slides.each(function(slideModel){
+            slideModel.set('submissionType', 'manual');
+          });
+          runnerView.render();
+          currentSlideView = getCurrentSlideView(runnerView);
+        });
+
+        afterEach(function(){
+          runnerView.remove();
+        });
+
+        describe('when slide is shown', function(){
+          it('should have only have disabled "check" button', function(){
+            var $navButtons = getNavButtons(runnerView);
+            expect($navButtons.length).toBe(1);
+            var $checkButton = $navButtons.eq(0);
+            expect($checkButton.html()).toContain('check');
+            expect($checkButton.attr('disabled')).toBe('disabled');
+          });
+        });
+
+        describe('when submission has been entered', function(){
+
+          var $checkButton;
+          beforeEach(function(){
+            // Get check button and confirm it is the only button.
+            var $navButtons = getNavButtons(runnerView);
+            expect($navButtons.length).toBe(1);
+            $checkButton = $navButtons.eq(0);
+            expect($checkButton.html()).toContain('check');
+
+            currentSlideView.model.set('submission', 42);
+          });
+
+          it("should have active check button", function(){
+            expect($checkButton.attr('disabled')).toBe(undefined);
+          });
+
+          it("check button should be disabled if answer is removed", function(){
+            expect($checkButton.attr('disabled')).toBe('disabled');
+          });
+        });
+
+        describe("after submission has been submitted, before result received", function(){
+          beforeEach(function(){
+            currentSlideView.model.set('submission', 42);
+            currentSlideView.model.set('submissionStatus', 'submitting');
+          });
+
+          it("should have 'disabled checking' for button text", function(){
+            var $navButtons = getNavButtons(runnerView);
+            expect($navButtons.length).toBe(1);
+            var $checkingButton = $navButtons.eq(0);
+            expect($checkingButton.html()).toContain('checking');
+            expect($checkingButton.attr('disabled')).toBe('disabled');
+          });
+        });
+
+        describe("after submission is complete", function(){
+          beforeEach(function(){
+            currentSlideView.model.set('submission', 42);
+            currentSlideView.model.set('submissionStatus', 'completed');
+          });
+          it("should have enabled 'continue' button", function(){
+            var $navButtons = getNavButtons(runnerView);
+            expect($navButtons.length).toBe(1);
+            var $continueButton = $navButtons.eq(0);
+            expect($continueButton.html()).toContain('continue');
+            expect($continueButton.attr('disabled')).toBe(undefined);
+          });
+        });
+      });
+
+      describe('submissionType: automatic', function(){
+
+        describe('when slide is shown', function(){
+          it('should have disabled "check" button', function(){
+            this.fail('NOT IMPLEMENTED');
+          });
+        });
+
+        describe("after answer has been submitted, before result received", function(){
+          it("should have 'checking' for button text", function(){
+            this.fail('NOT IMPLEMENTED');
+          });
+
+          it("button should be disabled", function(){
+            this.fail('NOT IMPLEMENTED');
+          });
+        });
+
+        describe("after result received", function(){
+          it("should have 'continue' for button text", function(){
+            this.fail('NOT IMPLEMENTED');
+          });
+
+          it("button should be enabled", function(){
+            this.fail('NOT IMPLEMENTED');
+          });
+        });
+
+      });
+
+      describe('submissionType: noSubmission', function(){
+        it('should have only a "continue" button', function(){
+          this.fail('NOT IMPLEMENTED');
+        });
+
+        it('"continue" button should be enabled', function(){
+          this.fail('NOT IMPLEMENTED');
+        });
+      });
+    });
   });
 });
 
