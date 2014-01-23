@@ -89,7 +89,7 @@ define(function(require){
       slidesCollection.on('change:result', this.onChangeSlideResult, this);
 
       // Listen for completion event.
-      this.listenTo(primaryDeckView, 'deck:completed', this.onDeckCompleted, this);
+      this.listenTo(primaryDeckView, 'deck:completed', this.onPrimaryDeckCompleted, this);
 
       this.body.show(primaryDeckView);
 
@@ -112,9 +112,8 @@ define(function(require){
       this.model.set('result', 'fail');
     },
 
-    onDeckCompleted: function(){
+    onPrimaryDeckCompleted: function(){
       this.trigger('primaryDeck:completed');
-
       if (this.healthModel.get('currentHealth') > 0){
         this.model.set('result', 'pass');
       }
@@ -122,7 +121,10 @@ define(function(require){
         this.model.set('result', 'fail');
       }
 
-      // Show outro view if given.
+      this.showOutroView();
+    },
+
+    showOutroView: function(){
       if (this.options.getOutroView){
         var outroView = this.options.getOutroView(this);
         this.body.show(outroView);

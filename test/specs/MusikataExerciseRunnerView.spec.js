@@ -252,16 +252,32 @@ define(function(require){
         this.after(function(){runnerView.remove()});
       });
 
-      it('should change navigation buttons when showing outro view', function(){
-      });
-
       it("should show 'try again' view if runner result was 'fail'", function(){
+        var runnerView =  generateRunnerView();
+        runnerView.render();
+        runnerView.model.set('result', 'fail');
+        runnerView.showOutroView();
+        expect(runnerView.body.currentView.type).toBe('FailView');
+        this.after(function(){runnerView.remove()});
       });
 
-      it("should show 'pass' view if runner result was 'pass'", function(){
+      it("should show 'pass' view if runner result was 'pass' and we're not a milestone", function(){
+        var runnerView =  generateRunnerView();
+        runnerView.render();
+        runnerView.model.set('result', 'pass');
+        runnerView.showOutroView();
+        expect(runnerView.body.currentView.type).toBe('PassView');
+        this.after(function(){runnerView.remove()});
       });
 
       it("should show milestone 'pass' view if runner result was 'pass' and we're a milestone", function(){
+        var runnerView =  generateRunnerView();
+        runnerView.model.set("milestone", true);
+        runnerView.render();
+        runnerView.model.set('result', 'pass');
+        runnerView.showOutroView();
+        expect(runnerView.body.currentView.type).toBe('MilestonePassView');
+        this.after(function(){runnerView.remove()});
       });
     });
 

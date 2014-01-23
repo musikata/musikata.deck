@@ -9,12 +9,33 @@ define(function(require){
 
       // Not sure if this should go here, but get it in for now.
       if (! this.options.getOutroView){
-        this.options.getOutroView = function(){
-          console.log('getOutroView');
-          var DummyOutroView = Marionette.ItemView.extend({
-            template: function(){return 'foo';}
-          });
-          return new DummyOutroView();
+        this.options.getOutroView = function(runner){
+          var result = runner.model.get('result');
+
+          // @TODO: implement view types.
+          var OutroView;
+          if (result == 'fail'){
+            OutroView = Marionette.ItemView.extend({
+              type: 'FailView',
+              template: function(){return 'fail';}
+            });
+          }
+          else if (result == 'pass'){
+            if (this.model.get('milestone')){
+              OutroView = Marionette.ItemView.extend({
+                type: 'MilestonePassView',
+                template: function(){return 'MilestonePass';}
+              });
+            }
+            else{
+              OutroView = Marionette.ItemView.extend({
+                type: 'PassView',
+                template: function(){return 'Pass';}
+              });
+            }
+          }
+
+          return new OutroView();
         };
       }
 
