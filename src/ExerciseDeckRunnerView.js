@@ -133,7 +133,41 @@ define(function(require){
           }
         });
 
-      }
+      } // end manual
+
+      // Automatic submission: checking ->  continue.
+      else if (submissionType == 'automatic'){
+
+        // Initial state: disabled check button.
+        var buttonModel = new Backbone.Model({label: 'check', eventId: 'check', disabled: true})
+        navCollection.reset([buttonModel]);
+
+        slideModel.on('change:submissionStatus', function(model, submissionStatus){
+          // If submitting, change to checking.
+          if (submissionStatus == 'submitting'){
+            buttonModel.set({
+              label: 'checking',
+              disabled: true
+            });
+          }
+          // If submission complete, change to 'continue'.
+          else if (submissionStatus == 'completed'){
+            buttonModel.set({
+              label: 'continue',
+              eventId: 'continue',
+              disabled: false
+            });
+          }
+        });
+      } // end automatic
+
+      // noSubmission: continue.
+      else if (! submissionType){
+
+        // Initial state: enabled continue button.
+        var buttonModel = new Backbone.Model({label: 'continue', eventId: 'continue', disabled: false})
+        navCollection.reset([buttonModel]);
+      } // end noSubmission
     },
 
     onChangeSlideResult: function(model){

@@ -339,6 +339,7 @@ define(function(require){
             currentSlideView.model.set('submission', 42);
             currentSlideView.model.set('submissionStatus', 'completed');
           });
+
           it("should have enabled 'continue' button", function(){
             verifyButtons(runnerView, [
               {label: 'continue', disabled: undefined}
@@ -349,29 +350,79 @@ define(function(require){
 
       describe('submissionType: automatic', function(){
 
+        var runnerView;
+        var currentSlideView;
+        beforeEach(function(){
+          runnerView = generateRunnerView();
+          var slides = runnerView.model.get('deck').get('slides');
+          slides.each(function(slideModel){
+            slideModel.set('submissionType', 'automatic');
+          });
+          runnerView.render();
+          currentSlideView = getCurrentSlideView(runnerView);
+        });
+
+        afterEach(function(){
+          runnerView.remove();
+        });
+
         describe('when slide is shown', function(){
           it('should have disabled "check" button', function(){
-            this.fail('NOT IMPLEMENTED');
+            verifyButtons(runnerView, [
+              {label: 'check', disabled: 'disabled'}
+            ]);
           });
         });
 
-        describe("after answer has been submitted, before result received", function(){
+        describe("after submission has been submitted, before result received", function(){
+          beforeEach(function(){
+            currentSlideView.model.set('submission', 42);
+            currentSlideView.model.set('submissionStatus', 'submitting');
+          });
+
           it("should have disabled 'checking' button", function(){
-            this.fail('NOT IMPLEMENTED');
+            verifyButtons(runnerView, [
+              {label: 'checking', disabled: 'disabled'}
+            ]);
           });
         });
 
         describe("after result received", function(){
+          beforeEach(function(){
+            currentSlideView.model.set('submission', 42);
+            currentSlideView.model.set('submissionStatus', 'completed');
+          });
+
           it("should have enabled 'continue' button", function(){
-            this.fail('NOT IMPLEMENTED');
+            verifyButtons(runnerView, [
+              {label: 'continue', disabled: undefined}
+            ]);
           });
         });
 
       });
 
       describe('submissionType: noSubmission', function(){
+        var runnerView;
+        var currentSlideView;
+        beforeEach(function(){
+          runnerView = generateRunnerView();
+          var slides = runnerView.model.get('deck').get('slides');
+          slides.each(function(slideModel){
+            slideModel.set('submissionType', null);
+          });
+          runnerView.render();
+          currentSlideView = getCurrentSlideView(runnerView);
+        });
+
+        afterEach(function(){
+          runnerView.remove();
+        });
+
         it('should have an enabled "continue" button', function(){
-          this.fail('NOT IMPLEMENTED');
+          verifyButtons(runnerView, [
+            {label: 'continue', disabled: undefined}
+          ]);
         });
       });
     });
