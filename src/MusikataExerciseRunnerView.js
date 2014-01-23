@@ -1,8 +1,25 @@
 define(function(require){
+  var Marionette = require('marionette');
   var ExerciseDeckRunnerView = require('./ExerciseDeckRunnerView');
   var DeckView = require('./DeckView');
 
   var MusikataExerciseRunner = ExerciseDeckRunnerView.extend({
+
+    initialize: function(options){
+
+      // Not sure if this should go here, but get it in for now.
+      if (! this.options.getOutroView){
+        this.options.getOutroView = function(){
+          console.log('getOutroView');
+          var DummyOutroView = Marionette.ItemView.extend({
+            template: function(){return 'foo';}
+          });
+          return new DummyOutroView();
+        };
+      }
+
+      ExerciseDeckRunnerView.prototype.initialize.apply(this, [options]);
+    },
 
     onRender: function(){
 

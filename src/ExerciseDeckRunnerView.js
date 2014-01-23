@@ -64,8 +64,6 @@ define(function(require){
         this.showPrimaryDeck();
       }
 
-      // Listen for completion events.
-      this.on('deck:completed', this.onDeckCompleted, this);
     },
 
     showPrimaryDeck: function(){
@@ -90,6 +88,9 @@ define(function(require){
       // Listen for slide result changes.
       slidesCollection.on('change:result', this.onChangeSlideResult, this);
 
+      // Listen for completion event.
+      this.listenTo(primaryDeckView, 'deck:completed', this.onDeckCompleted, this);
+
       this.body.show(primaryDeckView);
 
     },
@@ -112,6 +113,8 @@ define(function(require){
     },
 
     onDeckCompleted: function(){
+      this.trigger('primaryDeck:completed');
+
       if (this.healthModel.get('currentHealth') > 0){
         this.model.set('result', 'pass');
       }
@@ -123,6 +126,7 @@ define(function(require){
       if (this.options.getOutroView){
         var outroView = this.options.getOutroView(this);
         this.body.show(outroView);
+        this.trigger('show:outroView', outroView);
       }
     }
 

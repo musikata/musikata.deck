@@ -102,16 +102,28 @@ define(function(require){
     return runnerView;
   };
 
+  /*
+   * Utility methods.
+   */
+  var getNavButton = function(runnerView, buttonText){
+    var navView = runnerView.nav.currentView;
+    return navView.$el.find('button:contains("' + buttonText + '")');
+  };
+
+  var clickThroughIntroSlides = function(runnerView){
+    var introSlides = runnerView.model.get('introDeck').get('slides');
+    var $continueButton = getNavButton(runnerView, 'continue');
+    for (var i=0; i < introSlides.length - 1; i++){
+      $continueButton.trigger('click');
+    }
+    var $startButton = getNavButton(runnerView, 'start');
+    $startButton.trigger('click');
+  };
 
   describe('MusikataExerciseRunnerView', function(){
     it('should be defined', function(){
       expect(MusikataExerciseRunnerView).toBeDefined();
     });
-
-    var getNavButton = function(runnerView, buttonText){
-      var navView = runnerView.nav.currentView;
-      return navView.$el.find('button:contains("' + buttonText + '")');
-    };
 
     describe('intro slides', function(){
 
@@ -175,16 +187,6 @@ define(function(require){
 
     describe('exercise slides', function(){
 
-      var clickThroughIntroSlides = function(runnerView){
-        var introSlides = runnerView.model.get('introDeck').get('slides');
-        var $continueButton = getNavButton(runnerView, 'continue');
-        for (var i=0; i < introSlides.length - 1; i++){
-          $continueButton.trigger('click');
-        }
-        var $startButton = getNavButton(runnerView, 'start');
-        $startButton.trigger('click');
-      };
-
       it('should start showing exercise slides when intro slides are done', function(){
         var runnerView =  generateRunnerView();
         runnerView.render();
@@ -207,7 +209,6 @@ define(function(require){
       it('should update navigation for each exercise slides', function(){
         var runnerView =  generateRunnerView();
         spyOn(runnerView, 'updateNavForSlide');
-        var introSlides = runnerView.model.get('introDeck').get('slides');
         runnerView.render();
         clickThroughIntroSlides(runnerView);
         var primaryDeckView = runnerView.body.currentView;
@@ -223,7 +224,6 @@ define(function(require){
       it('should change progress bar when going through exercise slides', function(){
         var runnerView =  generateRunnerView();
         spyOn(runnerView, 'updateNavForSlide');
-        var introSlides = runnerView.model.get('introDeck').get('slides');
         runnerView.render();
         clickThroughIntroSlides(runnerView);
         var primaryDeckView = runnerView.body.currentView;
@@ -239,6 +239,17 @@ define(function(require){
 
     describe('outro view', function(){
       it('should show outro view when deck completion event fires', function(){
+        var outroSpy = jasmine.createSpy('show outro view');
+        var runnerView =  generateRunnerView();
+        runnerView.on('show:outroView', function(){
+          outroSpy();
+        });
+        runnerView.render();
+        clickThroughIntroSlides(runnerView);
+        var primaryDeckView = runnerView.body.currentView;
+        primaryDeckView.trigger('deck:completed');
+        expect(outroSpy).toHaveBeenCalled();
+        this.after(function(){runnerView.remove()});
       });
 
       it('should change navigation buttons when showing outro view', function(){
