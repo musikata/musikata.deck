@@ -200,7 +200,7 @@ define(function(require){
 
     showOutroView: function(){
       if (this.options.getOutroView){
-        var outroView = this.options.getOutroView(this);
+        var outroView = this.options.getOutroView.apply(this);
         this.body.show(outroView);
         this.trigger('show:outroView', outroView);
       }

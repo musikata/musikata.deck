@@ -66,7 +66,8 @@ define(function(require){
 
   var generateTestModels = function(options){
     var defaultOptions = {
-      numSlides: 4
+      numSlides: 4,
+      destination: '/foo'
     };
 
     var mergedOptions = _.extend({}, defaultOptions, options);
@@ -83,7 +84,8 @@ define(function(require){
 
     testModels.runnerModel = new MusikataExerciseRunnerModel({
       introDeck: testModels.introDeck,
-      exerciseDeck: testModels.exerciseDeck
+      exerciseDeck: testModels.exerciseDeck,
+      destination: mergedOptions.destination
     });
 
     return testModels;
@@ -105,10 +107,6 @@ define(function(require){
   /*
    * Utility methods.
    */
-  var getNavButton = function(runnerView, buttonText){
-    var navView = runnerView.nav.currentView;
-    return navView.$el.find('button:contains("' + buttonText + '")');
-  };
 
   var clickThroughIntroSlides = function(runnerView){
     var introSlides = runnerView.model.get('introDeck').get('slides');
@@ -118,6 +116,34 @@ define(function(require){
     }
     var $startButton = getNavButton(runnerView, 'start');
     $startButton.trigger('click');
+  };
+
+  var getNavView = function(runnerView){
+    return runnerView.nav.currentView;
+  };
+
+  var getNavButtons = function(runnerView){
+    var navView = getNavView(runnerView);
+    return navView.$el.find('button');
+  };
+
+  var getNavButton = function(runnerView, buttonText){
+    var navView = getNavView(runnerView);
+    return navView.$el.find('button:contains("' + buttonText + '")');
+  };
+
+  var getCurrentSlideView = function(runnerView){
+    return runnerView.body.currentView.slide.currentView;
+  };
+
+  var verifyButtons = function(runnerView, buttonSpecs){
+    var $navButtons = getNavButtons(runnerView);
+    expect($navButtons.length).toBe(buttonSpecs.length);
+    _.each(buttonSpecs, function(buttonSpec, idx){
+      var $button = $navButtons.eq(idx);
+      expect($button.html()).toContain(buttonSpec.label);
+      expect($button.attr('disabled')).toBe(buttonSpec.disabled);
+    });
   };
 
   describe('MusikataExerciseRunnerView', function(){
@@ -238,46 +264,89 @@ define(function(require){
     });
 
     describe('outro view', function(){
+      var runnerView;
+      beforeEach(function(){
+        runnerView =  generateRunnerView();
+        runnerView.render();
+      });
+
+      afterEach(function(){
+        runnerView.remove();
+      });
+
       it('should show outro view when deck completion event fires', function(){
         var outroSpy = jasmine.createSpy('show outro view');
-        var runnerView =  generateRunnerView();
         runnerView.on('show:outroView', function(){
           outroSpy();
         });
-        runnerView.render();
         clickThroughIntroSlides(runnerView);
         var primaryDeckView = runnerView.body.currentView;
         primaryDeckView.trigger('deck:completed');
         expect(outroSpy).toHaveBeenCalled();
-        this.after(function(){runnerView.remove()});
       });
 
-      it("should show 'try again' view if runner result was 'fail'", function(){
-        var runnerView =  generateRunnerView();
-        runnerView.render();
-        runnerView.model.set('result', 'fail');
-        runnerView.showOutroView();
-        expect(runnerView.body.currentView.type).toBe('FailView');
-        this.after(function(){runnerView.remove()});
+      describe("when result is 'pass'", function(){
+
+        beforeEach(function(){
+          runnerView.model.set('result', 'pass');
+          runnerView.showOutroView();
+        });
+
+        it("should show 'pass' outro view", function(){
+          expect(runnerView.body.currentView.type).toBe('PassView');
+        });
+
+        it("should show enabled 'continue' button in nav", function(){
+          verifyButtons(runnerView, [
+            {label: 'continue', disabled: undefined}
+          ]);
+        });
+
+        it("clicking 'continue' button should redirect to destination", function(){
+          var redirectSpy = jasmine.createSpy('redirect');
+          runnerView.on('redirect', function(destination){
+            redirectSpy(destination);
+          });
+          var $continueButton = getNavButton(runnerView, 'continue');
+          $continueButton.trigger('click');
+          expect(redirectSpy).toHaveBeenCalledWith(runnerView.model.get('destination'));
+        });
       });
 
-      it("should show 'pass' view if runner result was 'pass' and we're not a milestone", function(){
-        var runnerView =  generateRunnerView();
-        runnerView.render();
-        runnerView.model.set('result', 'pass');
-        runnerView.showOutroView();
-        expect(runnerView.body.currentView.type).toBe('PassView');
-        this.after(function(){runnerView.remove()});
-      });
+      describe("when result is 'fail'", function(){
 
-      it("should show milestone 'pass' view if runner result was 'pass' and we're a milestone", function(){
-        var runnerView =  generateRunnerView();
-        runnerView.model.set("milestone", true);
-        runnerView.render();
-        runnerView.model.set('result', 'pass');
-        runnerView.showOutroView();
-        expect(runnerView.body.currentView.type).toBe('MilestonePassView');
-        this.after(function(){runnerView.remove()});
+        beforeEach(function(){
+          runnerView.model.set('result', 'fail');
+          runnerView.showOutroView();
+        });
+
+        it("should show 'fail' outro view", function(){
+          expect(runnerView.body.currentView.type).toBe('FailView');
+        });
+
+        it("should show enabled 'return to dojo' and 'try again' buttons in nav", function(){
+          verifyButtons(runnerView, [
+            {label: 'return to dojo', disabled: undefined},
+            {label: 'try again', disabled: undefined}
+          ]);
+        });
+
+        it("clicking 'return to dojo' should trigger redirectToDojo", function(){
+          var returnToDojoSpy = jasmine.createSpy('returnToDojo');
+          runnerView.on('returnToDojo', returnToDojoSpy);
+          var $dojoButton = getNavButton(runnerView, 'return to dojo');
+          $dojoButton.trigger('click');
+          expect(returnToDojoSpy).toHaveBeenCalled();
+        });
+
+        it("clicking 'try again' should trigger reload", function(){
+          var reloadSpy = jasmine.createSpy('reload');
+          runnerView.on('reload', reloadSpy);
+          var $reloadButton = getNavButton(runnerView, 'try again');
+          $reloadButton.trigger('click');
+          expect(reloadSpy).toHaveBeenCalled();
+        });
+
       });
     });
 

@@ -9,33 +9,52 @@ define(function(require){
 
       // Not sure if this should go here, but get it in for now.
       if (! this.options.getOutroView){
-        this.options.getOutroView = function(runner){
-          var result = runner.model.get('result');
+        this.options.getOutroView = function(){
+          var result = this.model.get('result');
 
-          // @TODO: implement view types.
+          var navCollection = this.navView.collection;
+
           var OutroView;
-          if (result == 'fail'){
+          // Pass view.
+          if (result == 'pass'){
+            OutroView = Marionette.ItemView.extend({
+              type: 'PassView',
+              template: function(){return 'Pass';}
+            });
+
+            navCollection.reset([
+              new Backbone.Model({label: 'continue', eventId: 'continue'})
+            ]);
+
+            // Trigger redirect event click continue.
+            this.listenTo(this.navView, 'button:clicked', function(buttonView, eventId){
+              if (eventId == 'continue'){
+                this.trigger('redirect', this.model.get('destination'));
+              }
+            }, this);
+
+          }
+          // 'Try Again' view.
+          else if (result == 'fail'){
             OutroView = Marionette.ItemView.extend({
               type: 'FailView',
               template: function(){return 'fail';}
             });
-          }
-          else if (result == 'pass'){
-            if (this.model.get('milestone')){
-              OutroView = Marionette.ItemView.extend({
-                type: 'MilestonePassView',
-                template: function(){return 'MilestonePass';}
-              });
-            }
-            else{
-              OutroView = Marionette.ItemView.extend({
-                type: 'PassView',
-                template: function(){return 'Pass';}
-              });
-            }
+
+            navCollection.reset([
+              new Backbone.Model({label: 'return to dojo', eventId: 'returnToDojo'}),
+              new Backbone.Model({label: 'try again', eventId: 'reload'})
+            ]);
+
+            // Trigger redirect event click continue.
+            this.listenTo(this.navView, 'button:clicked', function(buttonView, eventId){
+              this.trigger(eventId);
+            }, this);
           }
 
-          return new OutroView();
+          return new OutroView({
+            model: new Backbone.Model()
+          });
         };
       }
 
