@@ -1,13 +1,9 @@
-define(
-  [
-    'require',
-    'underscore',
-    'deck/CompositeView',
-    'deck/ViewFactory',
-    'backbone',
-    'marionette'
-],
-function(require, _, CompositeView, ViewFactory, Backbone){
+define(function(require){
+  var _ = require('underscore');
+  var CompositeView = require('deck/CompositeView');
+  var ViewFactory = require('deck/ViewFactory');
+  var Backbone = require('backbone');
+  var Marionette = require('marionette');
 
   describe('CompositeView', function(){
 
@@ -16,8 +12,12 @@ function(require, _, CompositeView, ViewFactory, Backbone){
       template: _.template('<div><%= html %></div>')
     });
     var viewFactory = new ViewFactory();
-    viewFactory.addHandler('html', HtmlView);
-    viewFactory.addHandler('composite', CompositeView);
+    viewFactory.addHandler('html', function(options){
+      return new HtmlView(options)
+    });
+    viewFactory.addHandler('composite', function(options){
+      return new CompositeView(options)
+    });
 
     // Setup model for each test.
     var compositeModel;
@@ -26,11 +26,11 @@ function(require, _, CompositeView, ViewFactory, Backbone){
         title: 'the composite model',
         children: new Backbone.Collection(
           [
-            new Backbone.Model({type: 'html', html: 'one'}),
-            new Backbone.Model({type: 'composite', children: new Backbone.Collection([
-                               new Backbone.Model({type: 'html', html: 'two.one'}),
-                               new Backbone.Model({type: 'html', html: 'two.twow'}),
-            ])})
+          new Backbone.Model({type: 'html', html: 'one'}),
+          new Backbone.Model({type: 'composite', children: new Backbone.Collection([
+            new Backbone.Model({type: 'html', html: 'two.one'}),
+            new Backbone.Model({type: 'html', html: 'two.twow'}),
+          ])})
         ])
       });
     });

@@ -1,11 +1,7 @@
-define(
-  [
-    'require',
-    'deck/CompositeModel',
-    'deck/ModelFactory',
-    'backbone'
-],
-function(require, CompositeModel, ModelFactory, Backbone){
+define(function(require){
+  var CompositeModel = require('deck/CompositeModel');
+  var ModelFactory = require('deck/ModelFactory');
+  var Backbone = require('backbone');
 
   describe('CompositeModel', function(){
 

@@ -43,7 +43,9 @@ function(require, ViewFactory, Backbone){
           type: 'myCustomView'
         });
         var MyCustomView = Backbone.View.extend();
-        viewFactory.addHandler('myCustomView', MyCustomView);
+        viewFactory.addHandler('myCustomView', function(options){
+          return new MyCustomView(options)
+        });
         var createdView = viewFactory.createView({model: model});
         expect(createdView instanceof MyCustomView).toBe(true);
       });

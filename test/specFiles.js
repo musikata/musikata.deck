@@ -7,6 +7,7 @@ var specFiles = [
   'CompositeView.spec.js',
   'DeckFactory.spec.js',
   'DeckModel.spec.js',
+  'DeckView.spec.js',
   'HtmlView.spec.js',
   'ModelFactory.spec.js',
   'SlideModel.spec.js',

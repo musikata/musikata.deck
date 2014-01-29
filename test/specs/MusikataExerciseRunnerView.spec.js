@@ -35,8 +35,12 @@ define(function(require){
 
   var generateViewFactory = function(){
     var viewFactory = new ViewFactory();
-    viewFactory.addHandler('silly', SillyExercise);
-    viewFactory.addHandler('html', HtmlView);
+    viewFactory.addHandler('silly', function(options){
+      return new SillyExercise(options)
+    });
+    viewFactory.addHandler('html', function(options){
+      return new HtmlView(options);
+    });
     return viewFactory;
   };
 

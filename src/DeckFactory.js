@@ -20,8 +20,14 @@ define(function(require){
     this.modelFactory.addHandler('composite', CompositeModel);
 
     // Register handling for core view types.
-    this.viewFactory.addHandler('html', HtmlView);
-    this.viewFactory.addHandler('composite', CompositeView);
+    this.viewFactory.addHandler('html', _.bind(function(options){
+      return new HtmlView(options);
+    }, this));
+    this.viewFactory.addHandler('composite', _.bind(function(options){
+      return new CompositeView(_.extend({
+        viewFactory: this.viewFactory
+      }, options));
+    }, this));
   };
 
   _.extend(DeckFactory.prototype, {

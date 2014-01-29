@@ -2,7 +2,6 @@ define(function(require){
 
   var Marionette = require('marionette');
   var Handlebars = require('handlebars');
-  var ViewFactory = require('./ViewFactory');
   var DeckViewTemplate = require('text!./templates/DeckView.html');
 
   var DeckView = Marionette.Layout.extend({
@@ -76,8 +75,7 @@ define(function(require){
 
     showSlide: function(slideModel){
       var slideView = this.options.viewFactory.createView({
-        model: slideModel,
-        viewFactory: this.options.viewFactory
+        model: slideModel
       });
       // DO LOGIC FOR WAITING WHEN SLIDE IS READY HERE? OR AFTER SHOWING THE
       // SLIDE?
