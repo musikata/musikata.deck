@@ -20,10 +20,10 @@ define(function(require){
     template: Handlebars.compile(ExerciseDeckRunnerViewTemplate), 
 
     regions: {
-      body: '.body_container',
-      health: '.health_container',
-      nav: '.nav_container',
-      progress: '.progress_container'
+      body: '.body-container',
+      health: '.health-container',
+      nav: '.nav-container',
+      progress: '.progress-container'
     },
 
     ui: {

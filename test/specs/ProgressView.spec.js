@@ -26,7 +26,7 @@ function(
     it('should display correct number of progress units per size', function(){
       var view = generateProgressView();
       view.render();
-      expect(view.$el.find('.progress_unit').length).toBe(view.model.get('size'));
+      expect(view.ui.progressUnits.length).toBe(view.model.get('size'));
       view.remove();
     });
 
@@ -34,19 +34,19 @@ function(
       var view = generateProgressView();
       view.render();
 
-      var getActualNumDisabledUnits = function(){
-        return view.$el.find('.progress_unit.disabled').length;
+      var getActualNumCompletedUnits = function(){
+        return view.ui.progressUnits.filter('.completed').length;
       };
 
-      var getExpectedNumDisabledUnits = function(){
-        return view.model.get("size") - view.model.get("currentProgress");
+      var getExpectedNumCompletedUnits = function(){
+        return view.model.get("currentProgress");
       };
 
-      expect(getActualNumDisabledUnits()).toEqual(getExpectedNumDisabledUnits());
+      expect(getActualNumCompletedUnits()).toEqual(getExpectedNumCompletedUnits());
       view.model.set('currentProgress', 2);
-      expect(getActualNumDisabledUnits()).toEqual(getExpectedNumDisabledUnits());
+      expect(getActualNumCompletedUnits()).toEqual(getExpectedNumCompletedUnits());
       view.model.set('currentProgress', 3);
-      expect(getActualNumDisabledUnits()).toEqual(getExpectedNumDisabledUnits());
+      expect(getActualNumCompletedUnits()).toEqual(getExpectedNumCompletedUnits());
       view.remove();
     });
 

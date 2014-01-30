@@ -118,7 +118,7 @@ define(function(require){
           view = generateRunnerView({model: testModels.runner});
           view.render();
           $('body').append(view.$el);
-          var $progressUnits = view.progress.currentView.$el.find('.progress_unit');
+          var $progressUnits = view.progress.currentView.ui.progressUnits;
           expect($progressUnits.length).toBe(numSlides);
           view.remove();
         });

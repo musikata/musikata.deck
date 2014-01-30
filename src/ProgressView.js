@@ -5,13 +5,16 @@ define(function(require){
   var ProgressViewTemplate = require('text!./templates/ProgressView.html');
 
   var ProgressView = Marionette.ItemView.extend({
+    attributes: {
+      class: 'progress-bar'
+    },
     template: Handlebars.compile(ProgressViewTemplate),
     templateHelpers: {
       progressUnits: function(){
         var progressUnits = [];
         for (var i=0; i < this.size; i++){
           progressUnits.push({
-            status: (i < this.currentProgress) ? '' : 'disabled'
+            status: (i < this.currentProgress) ? 'completed' : ''
           });
         }
         return progressUnits;
@@ -19,7 +22,7 @@ define(function(require){
     },
 
     ui: {
-      'progressUnits': '.progress_unit'
+      'progressUnits': '.progress-unit'
     },
 
     modelEvents: {
@@ -30,10 +33,10 @@ define(function(require){
       var currentProgress = this.model.get('currentProgress');
       this.ui.progressUnits.each(function(idx, el){
         if (idx < currentProgress){
-          $(el).removeClass('disabled');
+          $(el).addClass('completed');
         }
         else{
-          $(el).addClass('disabled');
+          $(el).removeClass('completed');
         }
       });
     }
