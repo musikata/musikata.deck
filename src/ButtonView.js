@@ -5,8 +5,7 @@ define(function(require){
   var ButtonView = Marionette.ItemView.extend({
     tagName: 'button',
 
-    template: Handlebars.compile('<span class="label"></span>'),
-
+    template: function(){return '';},
     events: {
       "click": "_onClick"
     },
@@ -31,7 +30,7 @@ define(function(require){
     },
 
     updateLabel: function(){
-      $(this.ui.label).html(this.model.get('label'));
+      this.$el.html(this.model.get('label'));
     },
 
     updateDisabled: function(){
