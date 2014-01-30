@@ -1,5 +1,8 @@
 <ul class="health_units">
     {{#each healthUnits }}
-    <li><span class="health_unit {{this.status}}"></span></li>
+    <li class="health-unit {{this.status}}">
+    <i class="healthy"></i>
+    <i class="empty"></i>
+    </li>
     {{/each }}
 </ul>

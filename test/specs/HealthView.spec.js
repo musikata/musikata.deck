@@ -26,7 +26,7 @@ function(
     it('should display correct number of health units per size', function(){
       var view = generateHealthView();
       view.render();
-      expect(view.$el.find('.health_unit').length).toBe(view.model.get('size'));
+      expect(view.ui.healthUnits.length).toBe(view.model.get('size'));
       view.remove();
     });
 
@@ -35,7 +35,7 @@ function(
       view.render();
 
       var getActualNumDisabledUnits = function(){
-        return view.$el.find('.health_unit.disabled').length;
+        return view.ui.healthUnits.filter('.empty').length;
       };
 
       var getExpectedNumDisabledUnits = function(){

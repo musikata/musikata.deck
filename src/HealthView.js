@@ -4,13 +4,16 @@ define(function(require){
   var HealthViewTemplate = require('text!./templates/HealthView.html');
 
   var HealthView = Marionette.ItemView.extend({
+    attributes: {
+      class: 'health-bar',
+    },
     template: Handlebars.compile(HealthViewTemplate),
     templateHelpers: {
       healthUnits: function(){
         var healthUnits = [];
         for (var i=0; i < this.size; i++){
           healthUnits.push({
-            status: (i < this.currentHealth) ? '' : 'disabled'
+            status: (i < this.currentHealth) ? '' : 'empty'
           });
         }
         return healthUnits;
@@ -18,7 +21,7 @@ define(function(require){
     },
 
     ui: {
-      'healthUnits': '.health_unit'
+      'healthUnits': '.health-unit'
     },
 
     modelEvents: {
@@ -29,10 +32,10 @@ define(function(require){
       var currentHealth = this.model.get('currentHealth');
       this.ui.healthUnits.each(function(idx, el){
         if (idx < currentHealth){
-          $(el).removeClass('disabled');
+          $(el).removeClass('empty');
         }
         else{
-          $(el).addClass('disabled');
+          $(el).addClass('empty');
         }
       });
     }
