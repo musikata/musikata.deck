@@ -87,7 +87,7 @@ define(function(require){
       this.listenTo(primaryDeckView, 'slide:show', function(slideView){
         this.updateNavForSlide(slideView);
         // Listen for slide submission results.
-        this.listenTo(slideView.submission, 'change:result', function(submission, result){
+        this.listenTo(slideView.model.get('submission'), 'change:result', function(submission, result){
           if (result == 'pass'){
             // Nothing here yet...
           }
@@ -108,7 +108,7 @@ define(function(require){
       // @TODO: Refactor this later. This is the first attempt,
       // prolly gonna be wicked kludgy at first. But let's get it out there.
       var submissionType = slideView.submissionType;
-      var submission = slideView.submission;
+      var submission = slideView.model.get('submission');
       var navCollection = this.nav.currentView.collection;
 
       // Manual submissions: check -> checking -> continue.

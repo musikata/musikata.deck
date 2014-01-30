@@ -11,6 +11,7 @@ var specFiles = [
   'HtmlView.spec.js',
   'ModelFactory.spec.js',
   'SlideModel.spec.js',
+  'ExerciseSlideModel.spec.js',
   'ViewFactory.spec.js',
   'HealthModel.spec.js',
   'HealthView.spec.js',

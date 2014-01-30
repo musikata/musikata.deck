@@ -8,6 +8,7 @@ define(function(require){
   var ViewFactory = require('deck/ViewFactory');
   var DeckModel = require('deck/DeckModel');
   var DeckView = require('deck/DeckView');
+  var ExerciseSlideModel = require('deck/ExerciseSlideModel');
   var ExerciseDeckRunnerModel = require('deck/ExerciseDeckRunnerModel');
   var ExerciseDeckRunnerView = require('deck/ExerciseDeckRunnerView');
 
@@ -24,9 +25,6 @@ define(function(require){
     ),
     events: {
       'click button': 'onButtonClick'
-    },
-    initialize: function(options){
-      this.submission = new Backbone.Model();
     },
     onRender: function(){
       this.trigger('ready');
@@ -60,7 +58,7 @@ define(function(require){
 
     var slideModels = [];
     for(var i=0; i < mergedOptions.numSlides; i++){
-      slideModels.push(new Backbone.Model({type: 'silly'}));
+      slideModels.push(new ExerciseSlideModel({type: 'silly'}));
     }
     testModels.slides = new Backbone.Collection(slideModels);
 
@@ -146,11 +144,13 @@ define(function(require){
     describe('while deck is running', function(){
       var view;
       var currentSlideView;
+      var currentSubmission;
       var healthModel;
       beforeEach(function(){
         view = generateRunnerView();
         view.render();
         currentSlideView = view.body.currentView.slide.currentView;
+        currentSubmission = currentSlideView.model.get('submission');
         healthModel = view.model.get('health');
       });
 
@@ -159,14 +159,14 @@ define(function(require){
       });
 
       it('should decrement health when slide result is fail', function(){
-        currentSlideView.submission.set('result', 'fail');
+        currentSubmission.set('result', 'fail');
         var expectedHealth = healthModel.get('size') - 1;
         var actualHealth = healthModel.get('currentHealth');
         expect(expectedHealth).toEqual(actualHealth);
       });
 
       it('should not decrement health when slide result is pass', function(){
-        currentSlideView.submission.set('result', 'pass');
+        currentSubmission.set('result', 'pass');
         var expectedHealth = healthModel.get('size');
         var actualHealth = healthModel.get('currentHealth');
         expect(expectedHealth).toEqual(actualHealth);
@@ -279,9 +279,6 @@ define(function(require){
       describe("submissions", function(){
         var SubmittingExercise = Marionette.ItemView.extend({
           template: function(){return '';},
-          initialize: function(){
-            this.submission = new Backbone.Model();
-          }
         });
 
         describe('submissionType: manual', function(){
@@ -299,7 +296,7 @@ define(function(require){
             });
             runnerView.render();
             currentSlideView = getCurrentSlideView(runnerView);
-            submission = currentSlideView.submission;
+            submission = currentSlideView.model.get('submission');
           });
 
           afterEach(function(){
@@ -362,15 +359,20 @@ define(function(require){
         });
 
         describe('submissionType: automatic', function(){
-
+          var AutomaticExercise = SubmittingExercise.extend({
+            submissionType: 'automatic'
+          });
           var runnerView;
           var currentSlideView;
           var submission;
           beforeEach(function(){
             runnerView = generateRunnerView();
+            runnerView.options.viewFactory.setHandler('silly', function(opts){
+              return new AutomaticExercise(opts);
+            });
             runnerView.render();
             currentSlideView = getCurrentSlideView(runnerView);
-            submission = currentSlideView.submission;
+            submission = currentSlideView.model.get('submission');
           });
 
           afterEach(function(){

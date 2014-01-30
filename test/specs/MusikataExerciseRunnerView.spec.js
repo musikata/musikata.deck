@@ -6,6 +6,8 @@ define(function(require){
   var Handlebars = require('handlebars');
 
   var ViewFactory = require('deck/ViewFactory');
+  var SlideModel = require('deck/SlideModel');
+  var ExerciseSlideModel = require('deck/ExerciseSlideModel');
   var DeckModel = require('deck/DeckModel');
   var DeckView = require('deck/DeckView');
   var HtmlView = require('deck/HtmlView');
@@ -19,9 +21,6 @@ define(function(require){
     ),
     events: {
       'click button': 'onButtonClick'
-    },
-    initialize: function(options){
-      this.submission = new Backbone.Model();
     },
     onRender: function(){
       this.trigger('ready');
@@ -51,7 +50,7 @@ define(function(require){
     var opts = _.extend({
       numSlides: 3,
       generateSlideModel: function(idx){
-        return new Backbone.Model({
+        return new SlideModel({
           id: idx,
           type: 'html',
           html: '<span>slide #' + idx + '</span>'
@@ -85,7 +84,7 @@ define(function(require){
 
     testModels.exerciseDeck = generateDeckModel({
       generateSlideModel: function(idx){
-        return new Backbone.Model({id: idx, type: 'silly'});
+        return new ExerciseSlideModel({id: idx, type: 'silly'});
       }
     });
 
