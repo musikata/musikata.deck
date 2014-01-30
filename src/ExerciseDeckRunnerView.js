@@ -71,20 +71,19 @@ define(function(require){
 
     showPrimaryDeck: function(){
 
-      var primaryDeckView = new DeckView({
+      var deckView = new DeckView({
         model: this.primaryDeckModel,
         viewFactory: this.options.viewFactory
       });
-
-      var slidesCollection = this.primaryDeckModel.get('slides');
+      var slides = this.primaryDeckModel.get('slides');
 
       // Update progress when slide changes.
-      this.listenTo(this.primaryDeckModel, 'change:currentSlideIndex', function(model, slideIdx){
+      this.listenTo(deckView.model, 'change:currentSlideIndex', function(model, slideIdx){
         this.progressModel.set('currentProgress', slideIdx);
       }, this);
 
       // Update nav when slides show
-      this.listenTo(primaryDeckView, 'slide:show', function(slideView){
+      this.listenTo(deckView, 'slide:show', function(slideView){
         this.updateNavForSlide(slideView);
         // Listen for slide submission results.
         this.listenTo(slideView.model.get('submission'), 'change:result', function(submission, result){
@@ -97,10 +96,27 @@ define(function(require){
         }, this);
       }, this);
 
-      // Listen for completion event.
-      this.listenTo(primaryDeckView, 'deck:completed', this.onPrimaryDeckCompleted, this);
+      // Route nav events to view.
+      deckView.listenTo(this.navView, 'button:clicked', function(buttonView, eventId){
+        deckView.trigger(eventId);
+      });
 
-      this.body.show(primaryDeckView);
+      // On last slide, 'continue' should trigger completion.
+      this.listenToOnce(deckView, 'lastSlide', function(){
+        deckView.stopListening(this.navView);
+        this.listenToOnce(this.navView, 'button:clicked', function(buttonView, eventId){
+          if (eventId == 'continue'){
+            deckView.trigger('deck:completed');
+          }
+        });
+      }, this);
+
+      // Listen for completion event.
+      this.listenTo(deckView, 'deck:completed', function(){
+        this.onPrimaryDeckCompleted();
+      }, this);
+
+      this.body.show(deckView);
 
     },
 

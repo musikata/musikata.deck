@@ -126,6 +126,13 @@ define(function(require){
         expect(newCurrentSlideIndex).toBe(oldCurrentSlideIndex + 1);
       });
 
+      it('triggers lastSlide when showing last slide', function(){
+        var lastSlideSpy = jasmine.createSpy('lastSlideSpy');
+        deckView.on('lastSlide', lastSlideSpy);
+        deckView.goToSlide(deckView.model.get('slides').length - 1);
+        expect(lastSlideSpy).toHaveBeenCalled();
+      });
+
     });
 
   });

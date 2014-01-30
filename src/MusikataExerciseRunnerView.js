@@ -83,20 +83,20 @@ define(function(require){
             introView.trigger(eventId);
           });
 
-          // Update nav on final intro slide.
-          this.listenTo(introView, 'slide:show', function(view){
-            if (introView.model.get('currentSlideIndex') == (introSlides.length - 1)){
+          // Update nav on last intro slide.
+          this.listenToOnce(introView, 'lastSlide', function(){
+            introView.stopListening(this.navView);
 
-              navCollection.reset([
-                new Backbone.Model({label: 'start', eventId: 'startPrimaryDeck'})
-              ]);
+            navCollection.reset([
+              new Backbone.Model({label: 'start', eventId: 'startPrimaryDeck'})
+            ]);
 
-              // Complete intro deck when start is clicked.
-              introView.on('startPrimaryDeck', function(){
+            // Complete intro deck when start is clicked.
+            this.listenToOnce(this.navView, 'button:clicked', function(buttonView, eventId){
+              if (eventId == 'startPrimaryDeck'){
                 introView.trigger('complete');
-              });
-
-            }
+              }
+            });
           }, this);
 
           return introView;

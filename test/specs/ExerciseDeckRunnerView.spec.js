@@ -143,19 +143,28 @@ define(function(require){
 
     describe('while deck is running', function(){
       var view;
+      var deckView;
       var currentSlideView;
       var currentSubmission;
       var healthModel;
       beforeEach(function(){
         view = generateRunnerView();
         view.render();
-        currentSlideView = view.body.currentView.slide.currentView;
+        deckView = view.body.currentView;
+        currentSlideView = deckView.slide.currentView;
         currentSubmission = currentSlideView.model.get('submission');
         healthModel = view.model.get('health');
       });
 
       afterEach(function(){
         view.remove();
+      });
+
+      it('should route nav button events to the deck', function(){
+        var clickSpy = jasmine.createSpy('clickSpy');
+        deckView.on('fakeClick', clickSpy);
+        view.nav.currentView.trigger('button:clicked', {}, 'fakeClick');
+        expect(clickSpy).toHaveBeenCalled();
       });
 
       it('should decrement health when slide result is fail', function(){

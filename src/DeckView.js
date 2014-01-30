@@ -36,7 +36,8 @@ define(function(require){
     },
 
     goToSlide: function(index){
-      if  (index < 0 || index >= this.model.get('slides').length){
+      var numSlides = this.model.get('slides').length;
+      if  (index < 0 || index >= numSlides){
         throw new Error("Slide index '" + index + "' is out-of-bounds");
       }
       this.model.set('currentSlideIndex', index);
@@ -68,9 +69,16 @@ define(function(require){
     },
 
     showCurrentSlide: function(){
-      var currentSlide = this.model.get('slides').at(
-        this.model.get('currentSlideIndex'));
-        this.showSlide(currentSlide);
+      var currentIndex = this.model.get('currentSlideIndex');
+      var slides = this.model.get('slides');
+      var currentSlideModel = slides.at(currentIndex);
+      this.showSlide(currentSlideModel);
+
+      // Trigger lastSlide event.
+      // This can make runner code cleaner.
+      if (currentIndex == (slides.length - 1)){
+        this.trigger('lastSlide');
+      }
     },
 
     showSlide: function(slideModel){
