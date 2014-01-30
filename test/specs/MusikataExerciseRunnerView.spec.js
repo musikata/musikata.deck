@@ -20,6 +20,9 @@ define(function(require){
     events: {
       'click button': 'onButtonClick'
     },
+    initialize: function(options){
+      this.submission = new Backbone.Model();
+    },
     onRender: function(){
       this.trigger('ready');
     },

@@ -12,26 +12,28 @@ define(function(require){
   var ExerciseDeckRunnerView = require('deck/ExerciseDeckRunnerView');
 
   // Define a dummy intro view.
-  // @TODO: Should this extend from an IntroView base class? To make
-  // the interface explicit?
   var SillyView = Marionette.ItemView.extend({
     template: Handlebars.compile('<div>Beans!</div>')
   });
 
   // Define a test exercise.
   var SillyExercise = Marionette.ItemView.extend({
+    submissionType: 'automatic',
     template: Handlebars.compile(
       '<button id="pass" value="pass"><button id="fail" value="fail">'
     ),
     events: {
       'click button': 'onButtonClick'
     },
+    initialize: function(options){
+      this.submission = new Backbone.Model();
+    },
     onRender: function(){
       this.trigger('ready');
     },
     onButtonClick: function(e){
       var passFail = $(e.target).attr("id");
-      this.model.set('result', passFail);
+      this.submission.set('result', passFail);
     }
   });
 
@@ -142,24 +144,29 @@ define(function(require){
 
 
     describe('while deck is running', function(){
-      it('should decrement health when slide result is fail', function(){
-        var view = generateRunnerView();
+      var view;
+      var currentSlideView;
+      var healthModel;
+      beforeEach(function(){
+        view = generateRunnerView();
         view.render();
-        var healthModel = view.model.get('health');
-        var deckModel = view.model.get('deck');
-        deckModel.getCurrentSlideModel().set('result', 'fail');
-        var expectedHealth = healthModel.get('size') - 1;
-        var actualHealth = healthModel.get('currentHealth');
-        expect(expectedHealth).toEqual(actualHealth);
+        currentSlideView = view.body.currentView.slide.currentView;
+        healthModel = view.model.get('health');
+      });
+
+      afterEach(function(){
         view.remove();
       });
 
+      it('should decrement health when slide result is fail', function(){
+        currentSlideView.submission.set('result', 'fail');
+        var expectedHealth = healthModel.get('size') - 1;
+        var actualHealth = healthModel.get('currentHealth');
+        expect(expectedHealth).toEqual(actualHealth);
+      });
+
       it('should not decrement health when slide result is pass', function(){
-        var view = generateRunnerView();
-        view.render();
-        var healthModel = view.model.get('health');
-        var deckModel = view.model.get('deck');
-        deckModel.getCurrentSlideModel().set('result', 'pass');
+        currentSlideView.submission.set('result', 'pass');
         var expectedHealth = healthModel.get('size');
         var actualHealth = healthModel.get('currentHealth');
         expect(expectedHealth).toEqual(actualHealth);
@@ -269,154 +276,170 @@ define(function(require){
         });
       };
 
-      describe('submissionType: manual', function(){
+      describe("submissions", function(){
+        var SubmittingExercise = Marionette.ItemView.extend({
+          template: function(){return '';},
+          initialize: function(){
+            this.submission = new Backbone.Model();
+          }
+        });
 
-        var runnerView;
-        var currentSlideView;
-        beforeEach(function(){
-          runnerView = generateRunnerView();
-          var slides = runnerView.model.get('deck').get('slides');
-          slides.each(function(slideModel){
-            slideModel.set('submissionType', 'manual');
+        describe('submissionType: manual', function(){
+          var ManualExercise = SubmittingExercise.extend({
+            submissionType: 'manual'
           });
-          runnerView.render();
-          currentSlideView = getCurrentSlideView(runnerView);
-        });
-
-        afterEach(function(){
-          runnerView.remove();
-        });
-
-        describe('when slide is shown', function(){
-          it('should have only have disabled "check" button', function(){
-            verifyButtons(runnerView, [
-              {label: 'check', disabled: 'disabled'}
-            ]);
-          });
-        });
-
-        describe('when submission has been entered', function(){
+          var runnerView;
+          var currentSlideView;
+          var submission;
 
           beforeEach(function(){
-            currentSlideView.model.set('submission', 42);
+            runnerView = generateRunnerView();
+            runnerView.options.viewFactory.setHandler('silly', function(opts){
+              return new ManualExercise(opts);
+            });
+            runnerView.render();
+            currentSlideView = getCurrentSlideView(runnerView);
+            submission = currentSlideView.submission;
           });
 
-          it("should have active check button", function(){
-            verifyButtons(runnerView, [
-              {label: 'check', disabled: undefined}
-            ]);
+          afterEach(function(){
+            runnerView.remove();
           });
 
-          it("check button should be disabled if submission is removed", function(){
-            currentSlideView.model.set('submission', undefined);
-            verifyButtons(runnerView, [
-              {label: 'check', disabled: 'disabled'}
-            ]);
+          describe('when slide is shown', function(){
+            it('should have only have disabled "check" button', function(){
+              verifyButtons(runnerView, [
+                {label: 'check', disabled: 'disabled'}
+              ]);
+            });
+          });
+
+          describe('when submission has been entered', function(){
+
+            beforeEach(function(){
+              submission.set('data', 42);
+            });
+
+            it("should have active check button", function(){
+              verifyButtons(runnerView, [
+                {label: 'check', disabled: undefined}
+              ]);
+            });
+
+            it("check button should be disabled if submission is removed", function(){
+              submission.set('data', undefined);
+              verifyButtons(runnerView, [
+                {label: 'check', disabled: 'disabled'}
+              ]);
+            });
+          });
+
+          describe("after submission has been submitted, before result received", function(){
+            beforeEach(function(){
+              submission.set('data', 42);
+              submission.set('state', 'submitting');
+            });
+
+            it("should have 'disabled checking' for button text", function(){
+              verifyButtons(runnerView, [
+                {label: 'checking', disabled: 'disabled'}
+              ]);
+            });
+          });
+
+          describe("after submission is complete", function(){
+            beforeEach(function(){
+              submission.set('data', 42);
+              submission.set('state', 'completed');
+            });
+
+            it("should have enabled 'continue' button", function(){
+              verifyButtons(runnerView, [
+                {label: 'continue', disabled: undefined}
+              ]);
+            });
           });
         });
 
-        describe("after submission has been submitted, before result received", function(){
+        describe('submissionType: automatic', function(){
+
+          var runnerView;
+          var currentSlideView;
+          var submission;
           beforeEach(function(){
-            currentSlideView.model.set('submission', 42);
-            currentSlideView.model.set('submissionStatus', 'submitting');
+            runnerView = generateRunnerView();
+            runnerView.render();
+            currentSlideView = getCurrentSlideView(runnerView);
+            submission = currentSlideView.submission;
           });
 
-          it("should have 'disabled checking' for button text", function(){
-            verifyButtons(runnerView, [
-              {label: 'checking', disabled: 'disabled'}
-            ]);
+          afterEach(function(){
+            runnerView.remove();
           });
+
+          describe('when slide is shown', function(){
+            it('should have disabled "check" button', function(){
+              verifyButtons(runnerView, [
+                {label: 'check', disabled: 'disabled'}
+              ]);
+            });
+          });
+
+          describe("after submission has been submitted, before result received", function(){
+            beforeEach(function(){
+              submission.set('data', 42);
+              submission.set('state', 'submitting');
+            });
+
+            it("should have disabled 'checking' button", function(){
+              verifyButtons(runnerView, [
+                {label: 'checking', disabled: 'disabled'}
+              ]);
+            });
+          });
+
+          describe("after result received", function(){
+            beforeEach(function(){
+              submission.set('data', 42);
+              submission.set('state', 'completed');
+            });
+
+            it("should have enabled 'continue' button", function(){
+              verifyButtons(runnerView, [
+                {label: 'continue', disabled: undefined}
+              ]);
+            });
+          });
+
         });
 
-        describe("after submission is complete", function(){
+        describe('submissionType: noSubmission', function(){
+          var NoSubmissionExercise = SubmittingExercise.extend({
+            submissionType: null
+          });
+          var runnerView;
+          var currentSlideView;
+          var submission;
+
           beforeEach(function(){
-            currentSlideView.model.set('submission', 42);
-            currentSlideView.model.set('submissionStatus', 'completed');
+            runnerView = generateRunnerView();
+            runnerView.options.viewFactory.setHandler('silly', function(opts){
+              return new NoSubmissionExercise(opts);
+            });
+            runnerView.render();
+            currentSlideView = getCurrentSlideView(runnerView);
+            submission = currentSlideView.submission;
           });
 
-          it("should have enabled 'continue' button", function(){
+          afterEach(function(){
+            runnerView.remove();
+          });
+
+          it('should have an enabled "continue" button', function(){
             verifyButtons(runnerView, [
               {label: 'continue', disabled: undefined}
             ]);
           });
-        });
-      });
-
-      describe('submissionType: automatic', function(){
-
-        var runnerView;
-        var currentSlideView;
-        beforeEach(function(){
-          runnerView = generateRunnerView();
-          var slides = runnerView.model.get('deck').get('slides');
-          slides.each(function(slideModel){
-            slideModel.set('submissionType', 'automatic');
-          });
-          runnerView.render();
-          currentSlideView = getCurrentSlideView(runnerView);
-        });
-
-        afterEach(function(){
-          runnerView.remove();
-        });
-
-        describe('when slide is shown', function(){
-          it('should have disabled "check" button', function(){
-            verifyButtons(runnerView, [
-              {label: 'check', disabled: 'disabled'}
-            ]);
-          });
-        });
-
-        describe("after submission has been submitted, before result received", function(){
-          beforeEach(function(){
-            currentSlideView.model.set('submission', 42);
-            currentSlideView.model.set('submissionStatus', 'submitting');
-          });
-
-          it("should have disabled 'checking' button", function(){
-            verifyButtons(runnerView, [
-              {label: 'checking', disabled: 'disabled'}
-            ]);
-          });
-        });
-
-        describe("after result received", function(){
-          beforeEach(function(){
-            currentSlideView.model.set('submission', 42);
-            currentSlideView.model.set('submissionStatus', 'completed');
-          });
-
-          it("should have enabled 'continue' button", function(){
-            verifyButtons(runnerView, [
-              {label: 'continue', disabled: undefined}
-            ]);
-          });
-        });
-
-      });
-
-      describe('submissionType: noSubmission', function(){
-        var runnerView;
-        var currentSlideView;
-        beforeEach(function(){
-          runnerView = generateRunnerView();
-          var slides = runnerView.model.get('deck').get('slides');
-          slides.each(function(slideModel){
-            slideModel.set('submissionType', null);
-          });
-          runnerView.render();
-          currentSlideView = getCurrentSlideView(runnerView);
-        });
-
-        afterEach(function(){
-          runnerView.remove();
-        });
-
-        it('should have an enabled "continue" button', function(){
-          verifyButtons(runnerView, [
-            {label: 'continue', disabled: undefined}
-          ]);
         });
       });
     });

@@ -79,17 +79,23 @@ define(function(require){
       var slidesCollection = this.primaryDeckModel.get('slides');
 
       // Update progress when slide changes.
-      this.primaryDeckModel.on('change:currentSlideIndex', function(model, slideIdx){
+      this.listenTo(this.primaryDeckModel, 'change:currentSlideIndex', function(model, slideIdx){
         this.progressModel.set('currentProgress', slideIdx);
       }, this);
 
       // Update nav when slides show
-      primaryDeckView.on('slide:show', function(slideView){
+      this.listenTo(primaryDeckView, 'slide:show', function(slideView){
         this.updateNavForSlide(slideView);
+        // Listen for slide submission results.
+        this.listenTo(slideView.submission, 'change:result', function(submission, result){
+          if (result == 'pass'){
+            // Nothing here yet...
+          }
+          else if (result == 'fail'){
+            this.healthModel.decrementCurrentHealth();
+          }
+        }, this);
       }, this);
-
-      // Listen for slide result changes.
-      slidesCollection.on('change:result', this.onChangeSlideResult, this);
 
       // Listen for completion event.
       this.listenTo(primaryDeckView, 'deck:completed', this.onPrimaryDeckCompleted, this);
@@ -101,8 +107,8 @@ define(function(require){
     updateNavForSlide: function(slideView){
       // @TODO: Refactor this later. This is the first attempt,
       // prolly gonna be wicked kludgy at first. But let's get it out there.
-      var slideModel = slideView.model;
-      var submissionType = slideModel.get('submissionType');
+      var submissionType = slideView.submissionType;
+      var submission = slideView.submission;
       var navCollection = this.nav.currentView.collection;
 
       // Manual submissions: check -> checking -> continue.
@@ -114,20 +120,20 @@ define(function(require){
 
         // If submission is empty, disable check button.
         // otherwise, enable check button.
-        slideModel.on('change:submission', function(model, submission){
-          buttonModel.set('disabled', _.isUndefined(submission));
+        submission.on('change:data', function(submission, data){
+          buttonModel.set('disabled', _.isUndefined(data));
         });
 
-        slideModel.on('change:submissionStatus', function(model, submissionStatus){
+        submission.on('change:state', function(model, state){
           // If submitting, change to checking.
-          if (submissionStatus == 'submitting'){
+          if (state === 'submitting'){
             buttonModel.set({
               label: 'checking',
               disabled: true
             });
           }
           // If submission complete, change to 'continue'.
-          else if (submissionStatus == 'completed'){
+          else if (state === 'completed'){
             buttonModel.set({
               label: 'continue',
               eventId: 'continue',
@@ -145,16 +151,16 @@ define(function(require){
         var buttonModel = new Backbone.Model({label: 'check', eventId: 'check', disabled: true})
         navCollection.reset([buttonModel]);
 
-        slideModel.on('change:submissionStatus', function(model, submissionStatus){
+        submission.on('change:state', function(submission, state){
           // If submitting, change to checking.
-          if (submissionStatus == 'submitting'){
+          if (state === 'submitting'){
             buttonModel.set({
               label: 'checking',
               disabled: true
             });
           }
           // If submission complete, change to 'continue'.
-          else if (submissionStatus == 'completed'){
+          else if (state === 'completed'){
             buttonModel.set({
               label: 'continue',
               eventId: 'continue',
@@ -171,16 +177,6 @@ define(function(require){
         var buttonModel = new Backbone.Model({label: 'continue', eventId: 'continue', disabled: false})
         navCollection.reset([buttonModel]);
       } // end noSubmission
-    },
-
-    onChangeSlideResult: function(model){
-      var result = model.get('result');
-      if (result == 'pass'){
-        // Nothing here yet...
-      }
-      else if (result == 'fail'){
-        this.healthModel.decrementCurrentHealth();
-      }
     },
 
     onHealthEmpty: function(){

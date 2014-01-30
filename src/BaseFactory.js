@@ -7,7 +7,8 @@ define(function(require){
   };
 
   _.extend(BaseFactory.prototype, {
-    addHandler: function(type, handler, options){
+    // Like set handler, but with error checking.
+    addHandler: function(type, handler){
 
       // Throw error for key collisions.
       if (! _.isUndefined(this._handlers[type])){
@@ -15,12 +16,15 @@ define(function(require){
                         + type + "', please unregister the "
                         + "existing handler before setting a new one.");
       }
-
-      this._handlers[type] = handler;
+      this.setHandler(type, handler);
     },
 
     removeHandler: function(type){
       delete this._handlers[type];
+    },
+
+    setHandler: function(type, handler){
+      this._handlers[type] = handler;
     },
 
     getHandler: function(type){
