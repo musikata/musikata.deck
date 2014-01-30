@@ -17,25 +17,16 @@ define(function(require){
       Backbone.Model.apply(this, arguments);
     },
 
-    parse: function(response, options){
-      var parsedAttrs = {};
-      _.each(response, function(value, key){
-
-        if (key == 'slides'){
-          if (! (value instanceof Backbone.Collection)){
-            var slideDefinitions = value;
-            var parsedSlides = new Backbone.Collection();
-            _.each(slideDefinitions, function(slideDefinition){
-              var slideModel = this.modelFactory.createModel(slideDefinition);
-              parsedSlides.add(slideModel);
-            }, this);
-            value = parsedSlides;
-          }
-        }
-        parsedAttrs[key] = value;
-      }, this);
-
-      return parsedAttrs;
+    initialize: function(){
+      var slides = this.get('slides');
+      if (! (slides instanceof Backbone.Collection)){
+        var slideCollection = new Backbone.Collection();
+        _.each(slides, function(slide){
+          var slideModel = this.modelFactory.createModel(slide);
+          slideCollection.add(slideModel);
+        }, this);
+        this.set('slides', slideCollection);
+      }
     },
 
     getCurrentSlideModel: function(){

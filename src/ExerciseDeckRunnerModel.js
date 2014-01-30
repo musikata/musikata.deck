@@ -16,21 +16,22 @@ define(function(require){
     },
 
     initialize: function(){
-      // @TODO: add better safety checks for health model?
-      // Or put these in HealthModel itself.
       var health = this.get('health');
       if (! (health instanceof HealthModel)){
         this.set('health', new HealthModel(health));
       }
 
-      var progress = this.get('progress');
-      if (! (progress instanceof ProgressModel)){
-        this.set('progress', new ProgressModel(progress));
-      }
-
       var primaryDeck = this.get(this.primaryDeckAttr);
       if (! (primaryDeck instanceof DeckModel)){
         this.set(this.primaryDeckAttr, new DeckModel(primaryDeck, {parse: true}));
+      }
+
+      var progress = this.get('progress');
+      if (! (progress instanceof ProgressModel)){
+        var progressModel = new ProgressModel(progress);
+        var numSlides = this.get(this.primaryDeckAttr).get('slides').length;
+        progressModel.set('size', numSlides);
+        this.set('progress', progressModel);
       }
     }
   });

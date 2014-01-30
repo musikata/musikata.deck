@@ -1,5 +1,6 @@
 define(function(require){
   var DeckModel = require('deck/DeckModel');
+  var Backbone = require('backbone');
 
   describe('DeckModel', function(){
 
@@ -15,8 +16,8 @@ define(function(require){
         deckModel = new DeckModel();
       });
 
-      it('should have a slides attribute', function(){
-        expect(deckModel.get('slides')).toBeDefined();
+      it('should have a slides attribute that is a collection', function(){
+        expect(deckModel.get('slides') instanceof Backbone.Collection).toBe(true);
       });
 
       it('should have a currentSlideIndex attribute', function(){

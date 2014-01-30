@@ -100,6 +100,31 @@ define(function(require){
       view.remove();
     });
 
+    describe('progress view', function(){
+      var view;
+      beforeEach(function(){
+      });
+
+      it('should be visible', function(){
+        view = generateRunnerView();
+        view.render();
+        $('body').append(view.$el);
+        expect(view.progress.$el.is(':visible')).toBe(true);
+      });
+
+      it('should have correct number of progress units', function(){
+        _.each([5, 1, 7], function(numSlides){
+          var testModels = generateTestModels({numSlides: numSlides});
+          view = generateRunnerView({model: testModels.runner});
+          view.render();
+          $('body').append(view.$el);
+          var $progressUnits = view.progress.currentView.$el.find('.progress_unit');
+          expect($progressUnits.length).toBe(numSlides);
+          view.remove();
+        });
+      });
+    });
+
     describe('before deck starts', function(){
       it('should show an intro view if one was provided', function(){
         var view = generateRunnerView({
