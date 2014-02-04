@@ -83,11 +83,14 @@ define(function(require){
 
       // Update progress when slide changes.
       this.listenTo(deckView.model, 'change:currentSlideIndex', function(model, slideIdx){
-        this.progressModel.set('currentProgress', slideIdx);
       }, this);
 
-      // Update nav when slides show
+      // Update nav and progress when slides show
       this.listenTo(deckView, 'slide:show', function(slideView){
+
+        var currentSlideIndex = deckView.model.get('currentSlideIndex');
+        this.progressModel.set('currentProgress', currentSlideIndex + 1);
+
         this.updateNavForSlide(slideView);
         // Listen for slide submission results.
         this.listenTo(slideView.model.get('submission'), 'change:result', function(submission, result){

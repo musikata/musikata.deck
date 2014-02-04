@@ -215,7 +215,7 @@ define(function(require){
 
         var advanceAndCheckProgress = function(){
           deckView.goToNextSlide();
-          var expectedProgress = deckView.model.get('currentSlideIndex');
+          var expectedProgress = deckView.model.get('currentSlideIndex') + 1;
           var actualProgress = progressModel.get('currentProgress');
           expect(expectedProgress).toEqual(actualProgress);
         }

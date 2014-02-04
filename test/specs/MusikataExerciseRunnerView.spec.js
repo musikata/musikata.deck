@@ -262,8 +262,8 @@ define(function(require){
         var progressModel = runnerView.progress.currentView.model;
         var numExerciseSlides = primaryDeckView.model.get('slides').length;
         for (var i=0; i < numExerciseSlides - 1; i++){
-          primaryDeckView.goToNextSlide();
           expect(progressModel.get('currentProgress')).toBe(i + 1);
+          primaryDeckView.goToNextSlide();
         }
         this.after(function(){runnerView.remove()});
       });
