@@ -6,6 +6,7 @@ define(function(require){
   var Handlebars = require('handlebars');
 
   var MusikataFailViewTemplate = require('text!./templates/MusikataFailView.html');
+  var MusikataPassViewTemplate = require('text!./templates/MusikataPassView.html');
 
   var MusikataExerciseRunner = ExerciseDeckRunnerView.extend({
 
@@ -23,7 +24,10 @@ define(function(require){
           if (result == 'pass'){
             OutroView = Marionette.ItemView.extend({
               type: 'PassView',
-              template: function(){return 'Pass';}
+              attributes: {
+                class: 'pass-view'
+              },
+              template: Handlebars.compile(MusikataPassViewTemplate)
             });
 
             navCollection.reset([
