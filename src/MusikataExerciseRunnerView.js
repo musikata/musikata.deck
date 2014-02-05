@@ -1,7 +1,11 @@
 define(function(require){
+  var _ = require('underscore');
   var Marionette = require('marionette');
   var ExerciseDeckRunnerView = require('./ExerciseDeckRunnerView');
   var DeckView = require('./DeckView');
+  var Handlebars = require('handlebars');
+
+  var MusikataFailViewTemplate = require('text!./templates/MusikataFailView.html');
 
   var MusikataExerciseRunner = ExerciseDeckRunnerView.extend({
 
@@ -38,7 +42,10 @@ define(function(require){
           else if (result == 'fail'){
             OutroView = Marionette.ItemView.extend({
               type: 'FailView',
-              template: function(){return 'fail';}
+              attributes: {
+                class: 'fail-view'
+              },
+              template: Handlebars.compile(MusikataFailViewTemplate)
             });
 
             navCollection.reset([
@@ -62,6 +69,8 @@ define(function(require){
     },
 
     onRender: function(){
+
+      this.$el.addClass('musikata-exercise-deck-runner');
 
       // Create deck view for intro view if introSlides were given
       var introSlides = this.model.get('introDeck').get('slides');
