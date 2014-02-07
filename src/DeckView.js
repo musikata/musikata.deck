@@ -8,8 +8,12 @@ define(function(require){
 
     template: Handlebars.compile(DeckViewTemplate),
 
+    attributes: {
+      class: 'deck-view',
+    },
+
     regions: {
-      slide: '[data-role="slideRegion"]'
+      slide: '.slide-container'
     },
 
     modelEvents: {
