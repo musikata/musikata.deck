@@ -9,11 +9,11 @@ define(function(require){
     template: Handlebars.compile(DeckViewTemplate),
 
     attributes: {
-      class: 'deck-view',
+      class: 'deck',
     },
 
     regions: {
-      slide: '.slide-container'
+      slide: '.slide-region'
     },
 
     modelEvents: {

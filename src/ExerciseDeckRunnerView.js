@@ -1,5 +1,5 @@
 /*
- * The Runner is a container and mediator between several sub-views.
+ * The Runner is a region and mediator between several sub-views.
  * It coordinates interactions between decks, navigation, and health-views.
  * This allows us to keep the sub-views simple, and to make their relationships
  * explicit.
@@ -24,10 +24,10 @@ define(function(require){
     template: Handlebars.compile(ExerciseDeckRunnerViewTemplate), 
 
     regions: {
-      body: '.body-container',
-      health: '.health-container',
-      nav: '.nav-container',
-      progress: '.progress-container'
+      body: '.body-region',
+      health: '.health-region',
+      nav: '.nav-region',
+      progress: '.progress-region'
     },
 
     ui: {
