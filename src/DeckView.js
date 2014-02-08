@@ -87,7 +87,10 @@ define(function(require){
 
     showSlide: function(slideModel){
       var slideView = this.options.viewFactory.createView({
-        model: slideModel
+        model: slideModel,
+        attributes: {
+          class: 'slide'
+        }
       });
       // DO LOGIC FOR WAITING WHEN SLIDE IS READY HERE? OR AFTER SHOWING THE
       // SLIDE?
