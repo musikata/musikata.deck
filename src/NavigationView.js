@@ -3,6 +3,9 @@ define(function(require){
   var ButtonView = require('./ButtonView');
 
   var NavigationView = Marionette.CollectionView.extend({
+    attributes: {
+      class: 'navigation'
+    },
     itemView: ButtonView,
     itemViewEventPrefix: 'button'
   });
