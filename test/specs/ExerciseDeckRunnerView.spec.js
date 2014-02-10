@@ -414,9 +414,9 @@ define(function(require){
           });
 
           describe('when slide is shown', function(){
-            it('should have disabled "check" button', function(){
+            it('should have blank disabled button', function(){
               verifyButtons(runnerView, [
-                {label: 'check', disabled: 'disabled'}
+                {label: '&nbsp;', disabled: 'disabled'}
               ]);
             });
           });

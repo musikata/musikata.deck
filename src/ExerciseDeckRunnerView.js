@@ -170,8 +170,8 @@ define(function(require){
       // Automatic submission: checking ->  continue.
       else if (submissionType == 'automatic'){
 
-        // Initial state: disabled check button.
-        var buttonModel = new Backbone.Model({label: 'check', eventId: 'check', disabled: true})
+        // Initial state: disabled blank button.
+        var buttonModel = new Backbone.Model({label: '&nbsp;', eventId: 'check', disabled: true})
         navCollection.reset([buttonModel]);
 
         submission.on('change:state', function(submission, state){
