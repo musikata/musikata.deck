@@ -20,7 +20,9 @@ define(function(require){
       'change:currentSlideIndex': 'showCurrentSlide'
     },
 
-    initialize: function(){
+    initialize: function(options){
+      this.options = options;
+
       this.on('goToNextSlide', this.goToNextSlide, this);
       this.on('goToPreviousSlide', this.goToPreviousSlide, this);
 

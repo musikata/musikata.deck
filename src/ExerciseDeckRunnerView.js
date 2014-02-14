@@ -37,7 +37,9 @@ define(function(require){
     },
 
     initialize: function(options){
-      this.primaryDeckModel = options.model.get(options.model.primaryDeckAttr);
+      this.options = options;
+
+      this.primaryDeckModel = this.options.model.get(this.options.model.primaryDeckAttr);
 
       // Listen for deck completion
       this.on('primaryDeck:completed', this.onPrimaryDeckCompleted, this);

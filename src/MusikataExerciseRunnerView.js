@@ -11,6 +11,7 @@ define(function(require){
   var MusikataExerciseRunner = ExerciseDeckRunnerView.extend({
 
     initialize: function(options){
+      this.options = options;
 
       // Not sure if this should go here, but get it in for now.
       if (! this.options.getOutroView){
