@@ -25,9 +25,7 @@ define(function(require){
           if (result == 'pass'){
             OutroView = Marionette.ItemView.extend({
               type: 'PassView',
-              attributes: {
-                class: 'pass-view'
-              },
+              className: 'pass-view',
               template: Handlebars.compile(MusikataPassViewTemplate)
             });
 
@@ -47,9 +45,7 @@ define(function(require){
           else if (result == 'fail'){
             OutroView = Marionette.ItemView.extend({
               type: 'FailView',
-              attributes: {
-                class: 'fail-view'
-              },
+              classname: 'fail-view',
               template: Handlebars.compile(MusikataFailViewTemplate)
             });
 

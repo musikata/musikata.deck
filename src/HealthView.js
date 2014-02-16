@@ -4,9 +4,7 @@ define(function(require){
   var HealthViewTemplate = require('text!./templates/HealthView.html');
 
   var HealthView = Marionette.ItemView.extend({
-    attributes: {
-      class: 'health-bar',
-    },
+    className: 'health-bar',
     template: Handlebars.compile(HealthViewTemplate),
     templateHelpers: {
       healthUnits: function(){

@@ -5,9 +5,7 @@ define(function(require){
   var ProgressViewTemplate = require('text!./templates/ProgressView.html');
 
   var ProgressView = Marionette.ItemView.extend({
-    attributes: {
-      class: 'progress-bar'
-    },
+    className: 'progress-bar',
     template: Handlebars.compile(ProgressViewTemplate),
     templateHelpers: {
       progressUnits: function(){

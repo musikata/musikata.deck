@@ -8,9 +8,7 @@ define(function(require){
 
     template: Handlebars.compile(DeckViewTemplate),
 
-    attributes: {
-      class: 'deck',
-    },
+    className: 'deck',
 
     regions: {
       slide: '.slide-region'

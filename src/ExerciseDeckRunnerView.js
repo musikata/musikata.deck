@@ -17,9 +17,7 @@ define(function(require){
   var ExerciseDeckRunnerViewTemplate = require('text!./templates/ExerciseDeckRunnerView.html');
 
   var ExerciseDeckRunnerView = Marionette.Layout.extend({
-    attributes: {
-      class: 'exercise-deck-runner'
-    },
+    className: 'exercise-deck-runner',
 
     template: Handlebars.compile(ExerciseDeckRunnerViewTemplate), 
 
