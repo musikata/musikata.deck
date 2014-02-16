@@ -45,7 +45,7 @@ define(function(require){
           else if (result == 'fail'){
             OutroView = Marionette.ItemView.extend({
               type: 'FailView',
-              classname: 'fail-view',
+              className: 'fail-view',
               template: Handlebars.compile(MusikataFailViewTemplate)
             });
 
