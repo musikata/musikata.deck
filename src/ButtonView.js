@@ -1,6 +1,5 @@
 define(function(require){
   var Marionette = require('marionette');
-  var Handlebars = require('handlebars');
 
   var ButtonView = Marionette.ItemView.extend({
     tagName: 'button',
