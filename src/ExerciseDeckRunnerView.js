@@ -39,16 +39,12 @@ define(function(require){
 
       this.primaryDeckModel = this.options.model.get(this.options.model.primaryDeckAttr);
 
-      // Listen for deck completion
       this.on('primaryDeck:completed', this.onPrimaryDeckCompleted, this);
     },
 
     onRender: function(){
-      // Listen for health events.
-      this.healthModel = this.model.get('health');
-      this.healthModel.on('empty', this.onHealthEmpty, this);
-
       // Render health view.
+      this.healthModel = this.model.get('health');
       this.health.show(new HealthView({model: this.healthModel}));
 
       // Render progress view.
@@ -108,6 +104,11 @@ define(function(require){
         deckView.trigger(eventId);
       });
 
+      // Trigger last slide when health is empty.
+      this.healthModel.on('empty', function(){
+        deckView.trigger('lastSlide');
+      }, this);
+
       // On last slide, 'continue' should trigger completion.
       this.listenToOnce(deckView, 'lastSlide', function(){
         deckView.stopListening(this.navView);
@@ -120,7 +121,7 @@ define(function(require){
 
       // Listen for completion event.
       this.listenTo(deckView, 'deck:completed', function(){
-        this.onPrimaryDeckCompleted();
+        this.trigger('primaryDeck:completed');
       }, this);
 
       this.body.show(deckView);
@@ -200,10 +201,6 @@ define(function(require){
         var buttonModel = new Backbone.Model({label: 'continue', eventId: 'continue', disabled: false})
         navCollection.reset([buttonModel]);
       } // end noSubmission
-    },
-
-    onHealthEmpty: function(){
-      this.model.set('result', 'fail');
     },
 
     onPrimaryDeckCompleted: function(){

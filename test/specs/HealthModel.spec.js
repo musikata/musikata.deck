@@ -41,6 +41,16 @@ function(
         expect(model.get('currentHealth')).toEqual(0);
       });
 
+      it("should trigger 'empty' when currentHealth is 0", function(){
+        var model = new HealthModel({
+          size: 3
+        });
+        var emptySpy = jasmine.createSpy('emptySpy');
+        model.on('empty', emptySpy);
+        model.set('currentHealth', 0);
+        expect(emptySpy).toHaveBeenCalled();
+      });
+
     });
 
   });

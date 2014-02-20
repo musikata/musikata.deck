@@ -13,6 +13,13 @@ define(function(require){
       if (_.isUndefined(this.get('currentHealth'))){
         this.set('currentHealth', this.get('size'));
       }
+
+      // Fire 'empty' event when currentHealth reaches 0.
+      this.on('change:currentHealth', function(_this, currentHealth){
+        if (currentHealth == 0){
+          _this.trigger('empty');
+        }
+      });
     },
 
     decrementCurrentHealth: function(x){

@@ -204,7 +204,6 @@ define(function(require){
         var expectedHealth = healthModel.get('size');
         var actualHealth = healthModel.get('currentHealth');
         expect(expectedHealth).toEqual(actualHealth);
-        view.remove();
       });
 
       it('should increment progress when slide changes', function(){
@@ -223,25 +222,26 @@ define(function(require){
         for (var i=0; i < 2; i++){
           advanceAndCheckProgress();
         }
-
-        view.remove();
       });
 
-      it('should fail deck when health is empty', function(){
-        var view = generateRunnerView();
-        view.render();
-
-        var failed = null;
-
-        view.model.on('change:result', function(model){
-          failed = (model.get('result') == 'fail');
+      describe('when health is empty', function(){
+        beforeEach(function(){
+          view.model.get('health').set('currentHealth', 0);
         });
 
-        var healthModel = view.model.get('health');
-        healthModel.trigger('empty');
+        it("should set deck result to 'fail'", function(){
+          failed = (view.model.get('result') == 'fail');
+          expect(failed).toBe(true);
+          view.remove();
+        });
 
-        expect(failed).toBe(true);
-        view.remove();
+        iit('should trigger deck:complete on next continue event', function(){
+          var completionSpy = jasmine.createSpy('completionSpy');
+          view.on('primaryDeck:completed', completionSpy);
+          view.navView.trigger('button:clicked', {}, 'continue');
+          expect(completionSpy).toHaveBeenCalled();
+        })
+
       });
 
     });
