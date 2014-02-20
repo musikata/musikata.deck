@@ -48,6 +48,7 @@ define(function(require){
             });
 
             navCollection.reset([
+              new Backbone.Model({label: 'leave feedback', eventId: 'feedback'}),
               new Backbone.Model({label: 'return to dojo', eventId: 'dojo'}),
               new Backbone.Model({label: 'try again', eventId: 'tryAgain'})
             ]);

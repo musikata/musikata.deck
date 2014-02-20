@@ -330,11 +330,20 @@ define(function(require){
           expect(runnerView.body.currentView.type).toBe('FailView');
         });
 
-        it("should show enabled 'return to dojo' and 'try again' buttons in nav", function(){
+        it("should show correct buttons in nav", function(){
           verifyButtons(runnerView, [
+            {label: 'leave feedback', disabled: undefined},
             {label: 'return to dojo', disabled: undefined},
             {label: 'try again', disabled: undefined}
           ]);
+        });
+
+        it("clicking 'leave feedback' should trigger navigate", function(){
+          var navigationSpy = jasmine.createSpy('navigationSpy');
+          runnerView.on('navigate', navigationSpy);
+          var $feedbackButton = getNavButton(runnerView, 'leave feedback');
+          $feedbackButton.trigger('click');
+          expect(navigationSpy).toHaveBeenCalledWith('feedback');
         });
 
         it("clicking 'return to dojo' should trigger navigate", function(){
@@ -345,7 +354,7 @@ define(function(require){
           expect(navigationSpy).toHaveBeenCalledWith('dojo');
         });
 
-        it("clicking 'try again' should trigger tryAgain", function(){
+        it("clicking 'try again' should trigger navigate", function(){
           var navigationSpy = jasmine.createSpy('navigationSpy');
           runnerView.on('navigate', navigationSpy);
           var $reloadButton = getNavButton(runnerView, 'try again');
