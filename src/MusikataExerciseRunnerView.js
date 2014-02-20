@@ -30,14 +30,12 @@ define(function(require){
             });
 
             navCollection.reset([
-              new Backbone.Model({label: 'continue', eventId: 'continue'})
+              new Backbone.Model({label: 'continue', eventId: 'destination'})
             ]);
 
             // Trigger redirect event click continue.
             this.listenTo(this.navView, 'button:clicked', function(buttonView, eventId){
-              if (eventId == 'continue'){
-                this.trigger('redirect', this.model.get('destination'));
-              }
+              this.trigger('navigate', eventId);
             }, this);
 
           }
@@ -50,13 +48,13 @@ define(function(require){
             });
 
             navCollection.reset([
-              new Backbone.Model({label: 'return to dojo', eventId: 'returnToDojo'}),
-              new Backbone.Model({label: 'try again', eventId: 'reload'})
+              new Backbone.Model({label: 'return to dojo', eventId: 'dojo'}),
+              new Backbone.Model({label: 'try again', eventId: 'tryAgain'})
             ]);
 
             // Trigger redirect event click continue.
             this.listenTo(this.navView, 'button:clicked', function(buttonView, eventId){
-              this.trigger(eventId);
+              this.trigger('navigate', eventId);
             }, this);
           }
 

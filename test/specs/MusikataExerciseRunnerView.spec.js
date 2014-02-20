@@ -308,14 +308,14 @@ define(function(require){
           ]);
         });
 
-        it("clicking 'continue' button should redirect to destination", function(){
-          var redirectSpy = jasmine.createSpy('redirect');
-          runnerView.on('redirect', function(destination){
-            redirectSpy(destination);
+        it("clicking 'continue' button should trigger navigate", function(){
+          var navigationSpy = jasmine.createSpy('navigate');
+          runnerView.on('navigate', function(destination){
+            navigationSpy(destination);
           });
           var $continueButton = getNavButton(runnerView, 'continue');
           $continueButton.trigger('click');
-          expect(redirectSpy).toHaveBeenCalledWith(runnerView.model.get('destination'));
+          expect(navigationSpy).toHaveBeenCalledWith('destination');
         });
       });
 
@@ -337,20 +337,20 @@ define(function(require){
           ]);
         });
 
-        it("clicking 'return to dojo' should trigger redirectToDojo", function(){
-          var returnToDojoSpy = jasmine.createSpy('returnToDojo');
-          runnerView.on('returnToDojo', returnToDojoSpy);
+        it("clicking 'return to dojo' should trigger navigate", function(){
+          var navigationSpy = jasmine.createSpy('navigationSpy');
+          runnerView.on('navigate', navigationSpy);
           var $dojoButton = getNavButton(runnerView, 'return to dojo');
           $dojoButton.trigger('click');
-          expect(returnToDojoSpy).toHaveBeenCalled();
+          expect(navigationSpy).toHaveBeenCalledWith('dojo');
         });
 
-        it("clicking 'try again' should trigger reload", function(){
-          var reloadSpy = jasmine.createSpy('reload');
-          runnerView.on('reload', reloadSpy);
+        it("clicking 'try again' should trigger tryAgain", function(){
+          var navigationSpy = jasmine.createSpy('navigationSpy');
+          runnerView.on('navigate', navigationSpy);
           var $reloadButton = getNavButton(runnerView, 'try again');
           $reloadButton.trigger('click');
-          expect(reloadSpy).toHaveBeenCalled();
+          expect(navigationSpy).toHaveBeenCalledWith('tryAgain');
         });
 
       });
