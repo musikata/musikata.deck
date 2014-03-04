@@ -229,13 +229,7 @@ define(function(require){
           view.model.get('health').set('currentHealth', 0);
         });
 
-        it("should set deck result to 'fail'", function(){
-          failed = (view.model.get('result') == 'fail');
-          expect(failed).toBe(true);
-          view.remove();
-        });
-
-        iit('should trigger deck:complete on next continue event', function(){
+        it('should trigger deck:complete on next continue event', function(){
           var completionSpy = jasmine.createSpy('completionSpy');
           view.on('primaryDeck:completed', completionSpy);
           view.navView.trigger('button:clicked', {}, 'continue');
