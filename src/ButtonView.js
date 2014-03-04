@@ -3,7 +3,9 @@ define(function(require){
 
   var ButtonView = Marionette.ItemView.extend({
     tagName: 'button',
-
+    attributes: {
+      "class": 'button'
+    },
     template: function(){return '';},
     events: {
       "click": "_onClick"
