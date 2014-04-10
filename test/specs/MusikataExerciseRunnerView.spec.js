@@ -280,17 +280,6 @@ define(function(require){
         runnerView.remove();
       });
 
-      it('should show outro view when deck completion event fires', function(){
-        var outroSpy = jasmine.createSpy('show outro view');
-        runnerView.on('show:outroView', function(){
-          outroSpy();
-        });
-        clickThroughIntroSlides(runnerView);
-        var primaryDeckView = runnerView.body.currentView;
-        primaryDeckView.trigger('deck:completed');
-        expect(outroSpy).toHaveBeenCalled();
-      });
-
       describe("when result is 'pass'", function(){
 
         beforeEach(function(){

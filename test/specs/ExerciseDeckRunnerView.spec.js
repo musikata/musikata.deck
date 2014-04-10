@@ -240,35 +240,62 @@ define(function(require){
 
     });
 
-    describe('after deck completes', function(){
+    describe('after primary deck completes', function(){
 
-      it('should pass deck if we get to the end and still have health', function(){
-        var view = generateRunnerView();
+      var view;
+      beforeEach(function(){
+        view = generateRunnerView();
         view.render();
+      });
+
+      afterEach(function(){
+        view.remove();
+      });
+
+      it('should pass deck if we still have health', function(){
         view.trigger('primaryDeck:completed');
         expect(view.model.get('result')).toBe('pass');
-        this.after(function(){view.remove();});
+      });
+
+      it('should fail deck if we are out of health', function(){
+        view.model.get('health').set('currentHealth', 0);
+        view.trigger('primaryDeck:completed');
+        expect(view.model.get('result')).toBe('fail');
+      });
+
+      it('should trigger submit event on runner', function(){
+        var submitSpy = jasmine.createSpy('submit');
+        view.on('submit', submitSpy);
+        view.trigger('primaryDeck:completed');
+        expect(submitSpy).toHaveBeenCalled();
+      });
+
+
+    });
+
+    describe('outro view', function(){
+      var view;
+      afterEach(function(){
+        view.remove();
       });
 
       it('should show an outro view if one was given', function(){
         var outroView = new SillyView({
           model: new Backbone.Model({id: 'outro'})
         });
-        var view = generateRunnerView({
+        view = generateRunnerView({
           getOutroView: function(){
             return outroView;
           }
         });
         view.render();
 
-        view.trigger('primaryDeck:completed');
-
+        view.showOutroView();
         expect(view.body.currentView.model.get('id')).toEqual('outro');
-        view.remove();
       });
 
       it('should do nothing if no outro view was given', function(){
-        var view = generateRunnerView();
+        view = generateRunnerView();
         view.render();
         view.trigger('deck:completed');
 
@@ -276,7 +303,6 @@ define(function(require){
         expect(view.body.currentView.model).toBe(deckModel);
         view.remove();
       });
-
     });
     
     describe('update navigation for slide ', function(){

@@ -211,7 +211,8 @@ define(function(require){
         this.model.set('result', 'fail');
       }
 
-      this.showOutroView();
+      // Trigger submit on overall view.
+      this.trigger('submit');
     },
 
     showOutroView: function(){
