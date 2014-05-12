@@ -2,7 +2,7 @@ define(function(require){
 
   var _ = require('underscore');
   var Backbone = require('backbone');
-  var ModelFactory = require('./ModelFactory');
+
 
   var DeckModel = Backbone.Model.extend({
 
@@ -13,7 +13,7 @@ define(function(require){
 
     constructor: function(attrs, options){
       options = options || {};
-      this.modelFactory = options.modelFactory || new ModelFactory();
+      this.modelFactory = options.modelFactory;
       Backbone.Model.apply(this, arguments);
     },
 
@@ -22,7 +22,10 @@ define(function(require){
       if (! (slides instanceof Backbone.Collection)){
         var slideCollection = new Backbone.Collection();
         _.each(slides, function(slide){
-          var slideModel = this.modelFactory.createModel(slide);
+          var slideModel = this.modelFactory.createModel({
+            modelType: slide.modelType,
+            attrs: slide
+          });
           slideCollection.add(slideModel);
         }, this);
         this.set('slides', slideCollection);

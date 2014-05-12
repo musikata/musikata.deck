@@ -1,21 +1,16 @@
 define(function(require){
   var _ = require('underscore');
-  var BaseFactory = require('./BaseFactory');
 
-  var ModelFactory = function(){
-    BaseFactory.apply(this, arguments);
+
+  var ModelFactory = function(injector){
+    this.injector = injector;
   };
 
-  _.extend(ModelFactory.prototype, BaseFactory.prototype, {
+  _.extend(ModelFactory.prototype, {
     createModel: function(attrs, options){
-      var defaultOptions = {
-        parse: true,
-        modelFactory: this
-      };
-      var mergedOptions = {};
-      _.extend(mergedOptions, defaultOptions, options);
-      var ModelClass = this.getHandler(attrs.type);
-      return new ModelClass(attrs, mergedOptions);
+      var defaults = { parse: true, modelFactory: this };
+      var ModelClass = this.injector.resolve(attrs.type);
+      return new ModelClass(attrs, _.extend(defaults, options));
     }
   });
 
